@@ -221,16 +221,35 @@ def add_custom_css():
 
 
 def main():
-   st.markdown("""
-    <div style='margin-top: 40px; display: flex; justify-content: center;'>
-        <div style='text-align: center;'>
-            <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png' width='600' style='border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);'>
-            <h1 style='margin-top: 20px; font-size: 36px; color: #1f77b4;'>SS IntelliBot</h1>
-            <p style='font-size: 18px; color: #444;'>Precision. Speed. Knowledge. — Your AI companion for data-driven excellence.</p>
-            <p style='font-size: 13px; font-style: italic; color: #666;'>👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong> 🚀</p>
+  st.markdown("""
+    <div style='
+        margin-top: 40px;
+        padding: 30px;
+        border-radius: 16px;
+        background: linear-gradient(to right, #f2f2f2, #e0f7fa);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 40px;
+    '>
+        <div style='flex: 1; text-align: left;'>
+            <div style='font-size: 36px; font-weight: bold; color: #1f77b4;'>SS IntelliBot</div>
+            <div style='font-size: 16px; color: #333; margin-top: 10px;'>
+                Precision. Speed. Knowledge. — Your AI companion for data-driven excellence.
+            </div>
+            <div style='font-size: 13px; color: #555; font-style: italic; margin-top: 12px;'>
+                👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong> 🚀
+            </div>
+        </div>
+        <div style='flex-shrink: 0;'>
+            <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png'
+                 alt='SS IntelliBot Logo'
+                 style='width: 180px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);'>
         </div>
     </div>
 """, unsafe_allow_html=True)
+
 
     add_custom_css()
     handle_uploaded_pdf()
