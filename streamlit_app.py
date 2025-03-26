@@ -9,17 +9,16 @@ st.set_page_config(APP_NAME, page_icon="🤖", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
 connection_parameters = {
-
-    user=st.secrets["snowflake"]["user"],
-    password=st.secrets["snowflake"]["password"],
-    account=st.secrets["snowflake"]["account"],
-    warehouse=st.secrets["snowflake"]["warehouse"],
-    database=st.secrets["snowflake"]["database"],
-    schema=st.secrets["snowflake"]["schema"],
-    role=st.secrets["snowflake"].get("role", "ACCOUNTADMIN")
+    "user": st.secrets["snowflake"]["user"],
+    "password": st.secrets["snowflake"]["password"],
+    "account": st.secrets["snowflake"]["account"],
+    "warehouse": st.secrets["snowflake"]["warehouse"],
+    "database": st.secrets["snowflake"]["database"],
+    "schema": st.secrets["snowflake"]["schema"],
+    "role": st.secrets["snowflake"].get("role", "ACCOUNTADMIN")
 }
 
-# Create session
+# ✅ Create Snowpark session
 session = Session.builder.configs(connection_parameters).create()
 root = Root(session)
 
