@@ -161,7 +161,7 @@ def init_config():
             st.slider("Chat History Messages", 1, 10, 5, key="num_chat_messages")
 
         with st.sidebar.expander("📘 About IntelliBot"):
-            st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliBot", use_column_width=True)
+            st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliBot", use_container_width=True)
             st.caption("Ask Smart. Get Smarter.")
 
 def handle_uploaded_pdf():
