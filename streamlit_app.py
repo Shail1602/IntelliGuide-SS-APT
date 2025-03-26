@@ -221,20 +221,16 @@ def add_custom_css():
 
 
 def main():
-    st.markdown("""
-    <div style='margin-top: 30px; text-align: center;'>
-        <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/fb161768f98e9691211089ef71a0114236669803/SS%20Intellibot.png' width='600'>
+   st.markdown("""
+    <div style='margin-top: 40px; display: flex; justify-content: center;'>
+        <div style='text-align: center;'>
+            <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png' width='600' style='border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);'>
+            <h1 style='margin-top: 20px; font-size: 36px; color: #1f77b4;'>SS IntelliBot</h1>
+            <p style='font-size: 18px; color: #444;'>Precision. Speed. Knowledge. — Your AI companion for data-driven excellence.</p>
+            <p style='font-size: 13px; font-style: italic; color: #666;'>👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong> 🚀</p>
+        </div>
     </div>
 """, unsafe_allow_html=True)
-    st.markdown("""<div style='background: linear-gradient(to right, #f2f2f2, #e0f7fa); padding: 25px 40px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 20px;'>
-        <div style='background-color: #7b2cbf; color: white; font-size: 40px; font-weight: bold; width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(123, 44, 191, 0.7); animation: pulseGlow 2s infinite;'>SS</div>
-        <div style='text-align: left;'>
-            <div style='font-size: 32px; font-weight: bold; color: #1f77b4;'>SS IntelliBot</div>
-            <div style='font-size: 16px; color: #333;'>Precision. Speed. Knowledge. — Your AI companion for data-driven excellence.</div>
-            <div style='font-size: 13px; color: #555; font-style: italic; margin-top: 8px;'>👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong> 🚀</div>
-        </div>
-    </div>""", unsafe_allow_html=True)
-    st.markdown("<hr>", unsafe_allow_html=True)
 
     add_custom_css()
     handle_uploaded_pdf()
