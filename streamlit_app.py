@@ -8,18 +8,22 @@ APP_NAME = "SS IntelliBot"
 st.set_page_config(APP_NAME, page_icon="🤖", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
-connection_parameters = {
-    "user": st.secrets["snowflake"]["user"],
-    "password": st.secrets["snowflake"]["password"],
-    "account": st.secrets["snowflake"]["account"],
-    "warehouse": st.secrets["snowflake"]["warehouse"],
-    "database": st.secrets["snowflake"]["database"],
-    "schema": st.secrets["snowflake"]["schema"],
-    "role": st.secrets["snowflake"].get("role", "ACCOUNTADMIN")
-}
+import snowflake.connector
 
-# ✅ Create Snowpark session
-session = Session.builder.configs(connection_parameters).create()
+conn = snowflake.connector.connect(
+    user=st.secrets["snowflake"]["user"],
+    password=st.secrets["snowflake"]["password"],
+    account=st.secrets["snowflake"]["account"],
+    warehouse=st.secrets["snowflake"]["warehouse"],
+    database=st.secrets["snowflake"]["database"],
+    schema=st.secrets["snowflake"]["schema"],
+    role=st.secrets["snowflake"]["role"]
+)
+
+cur = conn.cursor()
+cur.execute("SELECT CURRENT_DATE;")
+result = cur.fetchone()
+st.success(f"✅ Snowflake Connected. Current date: {result[0]}")
 root = Root(session)
 
 def init_messages():
