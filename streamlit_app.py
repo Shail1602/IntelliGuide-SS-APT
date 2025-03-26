@@ -2,6 +2,7 @@ import streamlit as st
 from snowflake.core import Root
 from snowflake.cortex import Complete
 from snowflake.snowpark.context import get_active_session
+from snowflake.snowpark.session import Session
 
 APP_NAME = "SS IntelliBot"
 st.set_page_config(APP_NAME, page_icon="🤖", layout="wide")
