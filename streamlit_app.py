@@ -233,8 +233,8 @@ def main():
     st.markdown("<hr>", unsafe_allow_html=True)
 
     add_custom_css()
-    handle_uploaded_pdf()
     init_service_metadata()
+    handle_uploaded_pdf()
     init_config()
     init_messages()
 
