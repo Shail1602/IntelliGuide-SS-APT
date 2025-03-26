@@ -9,7 +9,7 @@ st.set_page_config(APP_NAME, page_icon="🤖", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
 connection_parameters = {
-     conn = snowflake.connector.connect(
+   
     user=st.secrets["snowflake"]["SHAILESHSAUMYA"],
     password=st.secrets["snowflake"]["Password@12ps!"],
     account=st.secrets["snowflake"]["https://inxwylj-gi58960.snowflakecomputing.com"],  # Just "xy12345.region"
@@ -17,7 +17,7 @@ connection_parameters = {
     database=st.secrets["snowflake"]["cortex_search_tutorial_db"],
     schema=st.secrets["snowflake"]["PUBLIC"],
     role=st.secrets["snowflake"].get("role", "ACCOUNTADMIN")
-)
+
 }
 
 # Create session
