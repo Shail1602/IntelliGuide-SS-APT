@@ -146,6 +146,8 @@ def apply_theme():
 
 def init_config():
     with st.sidebar:
+        st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliBot", use_container_width=True)
+        st.caption("Ask Smart. Get Smarter.")
         st.toggle("🌓 Dark Mode", key="dark_mode", value=False)
         apply_theme()
         st.title("⚙️ Configuration")
@@ -159,10 +161,6 @@ def init_config():
             st.selectbox("Select Model", MODELS, key="model_name")
             st.slider("Context Chunks", 1, 10, 5, key="num_retrieved_chunks")
             st.slider("Chat History Messages", 1, 10, 5, key="num_chat_messages")
-
-        with st.sidebar.expander("📘 About IntelliBot"):
-            st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliBot", use_container_width=True)
-            st.caption("Ask Smart. Get Smarter.")
 
 def handle_uploaded_pdf():
     uploaded_file = st.sidebar.file_uploader("📥 Upload PDF", type=["pdf"], key="pdf_uploader")
