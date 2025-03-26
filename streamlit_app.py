@@ -229,7 +229,7 @@ def main():
             <div style='font-size: 13px; color: #555; font-style: italic; margin-top: 8px;'>👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong> 🚀</div>
         </div>
         <div style='margin-top: 30px; text-align: center;'>
-        <img src='https://github.com/Shail1602/Inellibot/blob/fb161768f98e9691211089ef71a0114236669803/SS%20Intellibot.png' width='60'>
+        <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/fb161768f98e9691211089ef71a0114236669803/SS%20Intellibot.png' width='60'>
     </div>
     </div>""", unsafe_allow_html=True)
     st.markdown("<hr>", unsafe_allow_html=True)
