@@ -4,6 +4,7 @@ from snowflake.cortex import Complete
 from snowflake.snowpark.session import Session
 import json
 import os
+import fitz  # For extracting PDF text
 
 APP_NAME = "SS IntelliBot"
 st.set_page_config(APP_NAME, page_icon="🤖", layout="wide")
@@ -104,6 +105,9 @@ def build_prompt(question):
 
 
 def query_cortex(query, columns=None, filter={}):
+    if "local_pdf_context" in st.session_state:
+        return st.session_state.local_pdf_context[:5000]
+
     columns = columns or []
     db, schema = session.get_current_database(), session.get_current_schema()
     svc = root.databases[db].schemas[schema].cortex_search_services[st.session_state.selected_cortex_search_service]
@@ -123,175 +127,63 @@ def query_cortex(query, columns=None, filter={}):
     return context
 
 
-def apply_theme():
-    if st.session_state.get("dark_mode"):
-        st.markdown("""
-            <style>
-            body, .stApp {
-                background-color: #0e1117;
-                color: #fafafa;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown("""
-            <style>
-            body, .stApp {
-                background-color: #f2f2f2;
-                color: #000000;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-
-
-def init_config():
-    with st.sidebar:
-        st.toggle("🌓 Dark Mode", key="dark_mode", value=False)
-        apply_theme()
-        st.title("⚙️ Configuration")
-        st.selectbox("Cortex Search Service", [s["name"] for s in st.session_state.service_metadata], key="selected_cortex_search_service")
-        st.button("🧹 Clear Chat", key="clear_conversation")
-        st.toggle("🐞 Debug Mode", key="debug", value=False)
-        st.toggle("🕘 Use Chat History", key="use_chat_history", value=True)
-        st.selectbox("📂 Filter by Topic", TOPICS, key="selected_topic")
-        st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliBot", use_container_width=True)
-        st.caption("Ask Smart. Get Smarter.")
-        
-        with st.expander("🧠 Advanced Options"):
-            st.selectbox("Select Model", MODELS, key="model_name")
-            st.slider("Context Chunks", 1, 10, 5, key="num_retrieved_chunks")
-            st.slider("Chat History Messages", 1, 10, 5, key="num_chat_messages")
-
 def handle_uploaded_pdf():
     uploaded_file = st.sidebar.file_uploader("📥 Upload PDF", type=["pdf"], key="pdf_uploader")
     if uploaded_file is not None:
         st.session_state.uploaded_pdf = uploaded_file.name
         st.sidebar.success(f"Uploaded: {uploaded_file.name}")
 
-
-def generate_summary():
-    full_history = st.session_state.messages
-    formatted_history = ""
-    for m in full_history:
-        role = "User" if m["role"] == "user" else "Assistant"
-        formatted_history += f"{role}: {m['content']}\n"
-    prompt = f"""
-    [INST]
-    You are an expert summarizer. Summarize the following chat conversation into 5-7 key bullet points that capture the main ideas and solutions shared by the assistant. Be concise, and do not repeat.
-    <chat_history>
-    {formatted_history}
-    </chat_history>
-    Your output should look like:
-    - Point 1
-    - Point 2
-    ...
-    [/INST]
-    """
-    summary = complete(st.session_state.model_name, prompt)
-    return summary.strip()
-
-
-def add_custom_css():
-    chat_left_bg = "#f4f4f4" if not st.session_state.get("dark_mode") else "#1e1e1e"
-    chat_right_bg = "#dcf4ea" if not st.session_state.get("dark_mode") else "#2e2e2e"
-    text_color = "#000000" if not st.session_state.get("dark_mode") else "#fafafa"
-    st.markdown(f"""
-        <style>
-        .chat-left {{
-            background-color: {chat_left_bg};
-            color: {text_color};
-            padding: 14px;
-            border-radius: 14px;
-            margin: 12px 0;
-            text-align: left;
-            font-size: 15px;
-            border-left: 4px solid #1f77b4;
-        }}
-        .chat-right {{
-            background-color: {chat_right_bg};
-            color: {text_color};
-            padding: 14px;
-            border-radius: 14px;
-            margin: 12px 0;
-            text-align: right;
-            font-size: 15px;
-            border-right: 4px solid #2a9d8f;
-        }}
-        </style>
-    """, unsafe_allow_html=True)
+        # Extract text using PyMuPDF
+        doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+        pdf_text = ""
+        for page in doc:
+            pdf_text += page.get_text()
+        st.session_state.local_pdf_context = pdf_text
 
 
 def main():
-    st.markdown("""<div style='background: linear-gradient(to right, #f2f2f2, #e0f7fa); padding: 25px 40px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 20px;'>
-        <div style='background-color: #7b2cbf; color: white; font-size: 40px; font-weight: bold; width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(123, 44, 191, 0.7); animation: pulseGlow 2s infinite;'>SS</div>
-        <div style='text-align: left;'>
-            <div style='font-size: 32px; font-weight: bold; color: #1f77b4;'>SS IntelliBot</div>
-            <div style='font-size: 16px; color: #333;'>Precision. Speed. Knowledge. — Your AI companion for data-driven excellence.</div>
-            <div style='font-size: 13px; color: #555; font-style: italic; margin-top: 8px;'>👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong> 🚀</div>
-        </div>
-    </div>""", unsafe_allow_html=True)
-    st.markdown("<hr>", unsafe_allow_html=True)
-
-    add_custom_css()
+    st.title("🤖 SS IntelliBot")
+    init_messages()
     init_service_metadata()
     handle_uploaded_pdf()
-    init_config()
-    init_messages()
+
+    if "model_name" not in st.session_state:
+        st.session_state.model_name = MODELS[0]
+    if "num_retrieved_chunks" not in st.session_state:
+        st.session_state.num_retrieved_chunks = 5
+    if "num_chat_messages" not in st.session_state:
+        st.session_state.num_chat_messages = 5
+    if "debug" not in st.session_state:
+        st.session_state.debug = False
+    if "use_chat_history" not in st.session_state:
+        st.session_state.use_chat_history = True
+
+    st.sidebar.title("🛠 Configuration")
+    st.sidebar.selectbox("Model", MODELS, key="model_name")
+    st.sidebar.slider("Context Chunks", 1, 10, 5, key="num_retrieved_chunks")
+    st.sidebar.slider("Chat History Messages", 1, 10, 5, key="num_chat_messages")
 
     if len(st.session_state.messages) == 0:
-        st.markdown("""<div class='hero' style='margin-top: 10px;'>
-            👋 Welcome to SS IntelliBot! Ask any question based on our uploaded documents:
-            <br><br>
-            <b>Topics Available:</b> Database Concepts, AWS Framework, Python for Beginners,
-            Azure, PostgreSQL, Kubernetes, Pro Git, and OWASP.
-            <br><br>
-            Type your question below to get started!
-            <br><br>
-            <b>Try asking:</b>
-            <ul style='list-style-type: none; padding: 0;'>
-                <li>🔍 What is the difference between RDS and Redshift?</li>
-                <li>🤖 How do I deploy a model in Kubernetes?</li>
-                <li>🔐 What are OWASP Top 10 vulnerabilities?</li>
-                <li>🐘 How to connect Python to PostgreSQL?</li>
-                <li>☁️ What are key services in AWS Framework?</li>
-            </ul>
-        </div>""", unsafe_allow_html=True)
+        st.markdown("""
+        👋 Welcome to SS IntelliBot! Ask a question based on your uploaded PDF or indexed documents.
+        Try asking:
+        - What is the difference between RDS and Redshift?
+        - How do I deploy a model in Kubernetes?
+        - What are OWASP Top 10 vulnerabilities?
+        """)
 
     for i, msg in enumerate(st.session_state.messages):
-        css_class = "chat-left" if msg["role"] == "assistant" else "chat-right"
-        st.markdown(f"<div class='{css_class}'>{msg['content']}</div>", unsafe_allow_html=True)
-        if msg["role"] == "assistant":
-            if st.button("⭐ Pin this response", key=f"pin_{i}"):
-                st.session_state.pinned_messages.append(msg["content"])
-                save_session_state()
-                st.success("Pinned!")
+        role = "🧠" if msg["role"] == "assistant" else "🙋"
+        st.markdown(f"**{role} {msg['role'].capitalize()}:** {msg['content']}")
 
-    disable_chat = not st.session_state.service_metadata
-    if question := st.chat_input("💬 Ask your question...", disabled=disable_chat):
+    if question := st.chat_input("💬 Ask your question..."):
         st.session_state.messages.append({"role": "user", "content": question})
-        with st.spinner("SS IntelliBot is typing..."):
+        with st.spinner("Thinking..."):
             prompt = build_prompt(question.replace("'", ""))
             reply = complete(st.session_state.model_name, prompt)
             st.session_state.messages.append({"role": "assistant", "content": reply})
             save_session_state()
-            st.markdown(f"<div class='chat-left'>{reply}</div>", unsafe_allow_html=True)
-
-    if st.session_state.messages:
-        with st.expander("📌 Pinned Messages"):
-            for i, msg in enumerate(st.session_state.pinned_messages):
-                st.markdown(f"**Pinned {i+1}:** {msg}")
-
-        with st.expander("📊 Generate Summary"):
-            if st.button("Generate Insight Summary"):
-                summary = generate_summary()
-                st.markdown(f"**🔎 Summary:**\n\n{summary}", unsafe_allow_html=True)
-
-        with st.expander("⬇️ Download Chat History"):
-            full_chat = "\n".join([f"{m['role'].capitalize()}: {m['content']}" for m in st.session_state.messages])
-            st.download_button("Download .txt", full_chat, file_name="chat_history.txt")
-
-        with st.expander("📢 Feedback"):
-            st.radio("How helpful was the response?", ["👍 Excellent", "👌 Good", "👎 Needs Improvement"])
+            st.markdown(f"**🧠 Assistant:** {reply}")
 
 if __name__ == "__main__":
     main()
