@@ -76,12 +76,13 @@ def build_prompt(question):
     """
     return prompt
 
-def query_cortex(query, columns=[], filter={}):
+def query_cortex(query, columns=None, filter={}):
+    columns = columns or []
     db, schema = session.get_current_database(), session.get_current_schema()
     svc = root.databases[db].schemas[schema].cortex_search_services[st.session_state.selected_cortex_search_service]
     results = svc.search(query, columns=columns, filter=filter, limit=st.session_state.num_retrieved_chunks).results
     search_col = next(s["search_column"] for s in st.session_state.service_metadata if s["name"] == st.session_state.selected_cortex_search_service).lower()
-    context = "\n\n".join([f"Context {i+1}: {r[search_col]}" for i, r in enumerate(results)])
+    context = "\n\n".join([f"Context {i+1}: {r.get(search_col, '[Missing chunk]')}" for i, r in enumerate(results)])
     if st.session_state.debug:
         st.sidebar.text_area("📄 Context Documents", context, height=300)
     return context
