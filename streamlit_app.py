@@ -19,7 +19,15 @@ conn = snowflake.connector.connect(
     schema=st.secrets["snowflake"]["schema"],
     role=st.secrets["snowflake"]["role"]
 )
-
+connection_parameters = {
+    "user": st.secrets["snowflake"]["user"],
+    "password": st.secrets["snowflake"]["password"],
+    "account": st.secrets["snowflake"]["account"],
+    "warehouse": st.secrets["snowflake"]["warehouse"],
+    "database": st.secrets["snowflake"]["database"],
+    "schema": st.secrets["snowflake"]["schema"],
+    "role": st.secrets["snowflake"]["role"]  # optional fallback if not in secrets
+}
 cur = conn.cursor()
 cur.execute("SELECT CURRENT_DATE;")
 result = cur.fetchone()
