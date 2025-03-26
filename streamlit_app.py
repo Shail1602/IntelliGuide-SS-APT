@@ -24,6 +24,7 @@ cur = conn.cursor()
 cur.execute("SELECT CURRENT_DATE;")
 result = cur.fetchone()
 st.success(f"✅ Snowflake Connected. Current date: {result[0]}")
+session = Session.builder.configs(connection_parameters).create()
 root = Root(session)
 
 def init_messages():
