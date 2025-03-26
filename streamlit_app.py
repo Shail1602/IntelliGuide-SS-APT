@@ -24,7 +24,6 @@ session = Session.builder.configs(connection_parameters).create()
 root = Root(session)
 
 TOPICS = ["All Topics", "Database Concepts", "AWS Framework", "Python for Beginners", "Azure", "PostgreSQL", "Kubernetes", "Pro Git", "OWASP"]
-
 SESSION_STATE_FILE = "session_state.json"
 
 def complete(model, prompt):
@@ -32,7 +31,10 @@ def complete(model, prompt):
 
 def save_session_state():
     with open(SESSION_STATE_FILE, "w") as f:
-        json.dump({"messages": st.session_state.get("messages", []), "pinned_messages": st.session_state.get("pinned_messages", [])}, f)
+        json.dump({
+            "messages": st.session_state.get("messages", []),
+            "pinned_messages": st.session_state.get("pinned_messages", [])
+        }, f)
 
 def load_session_state():
     if os.path.exists(SESSION_STATE_FILE):
@@ -42,11 +44,13 @@ def load_session_state():
             st.session_state["pinned_messages"] = state.get("pinned_messages", [])
 
 def init_messages():
-    load_session_state()
+    if "messages" not in st.session_state:
+        load_session_state()
+        st.session_state.setdefault("messages", [])
+        st.session_state.setdefault("pinned_messages", [])
     if st.session_state.get("clear_conversation"):
         st.session_state.messages = []
         save_session_state()
-
 
 def init_service_metadata():
     if "service_metadata" not in st.session_state:
