@@ -26,8 +26,10 @@ root = Root(session)
 TOPICS = ["All Topics", "Database Concepts", "AWS Framework", "Python for Beginners", "Azure", "PostgreSQL", "Kubernetes", "Pro Git", "OWASP"]
 SESSION_STATE_FILE = "session_state.json"
 
+
 def complete(model, prompt):
     return Complete(model, prompt, session=session).replace("$", "\$")
+
 
 def save_session_state():
     with open(SESSION_STATE_FILE, "w") as f:
@@ -36,12 +38,14 @@ def save_session_state():
             "pinned_messages": st.session_state.get("pinned_messages", [])
         }, f)
 
+
 def load_session_state():
     if os.path.exists(SESSION_STATE_FILE):
         with open(SESSION_STATE_FILE, "r") as f:
             state = json.load(f)
             st.session_state["messages"] = state.get("messages", [])
             st.session_state["pinned_messages"] = state.get("pinned_messages", [])
+
 
 def init_messages():
     if "messages" not in st.session_state:
@@ -51,6 +55,7 @@ def init_messages():
     if st.session_state.get("clear_conversation"):
         st.session_state.messages = []
         save_session_state()
+
 
 def init_service_metadata():
     if "service_metadata" not in st.session_state:
@@ -62,8 +67,10 @@ def init_service_metadata():
             metadata.append({"name": svc_name, "search_column": search_col})
         st.session_state.service_metadata = metadata
 
+
 def get_chat_history():
     return st.session_state.messages[-st.session_state.num_chat_messages:-1]
+
 
 def summarize_chat(chat_history, question):
     prompt = f"""
@@ -75,21 +82,12 @@ def summarize_chat(chat_history, question):
     """
     return complete(st.session_state.model_name, prompt)
 
+
 def build_prompt(question):
     chat_history = get_chat_history() if st.session_state.use_chat_history else []
     chat_text = "\n".join([msg["content"] for msg in chat_history if msg["role"] == "user"])
     summary = summarize_chat(chat_text, question) if chat_history else question
     context = query_cortex(summary)
-
-    if not context.strip():  # 🛑 If context is empty, show a fallback response
-        return """
-        [INST]
-        You are SS IntelliBot. There is no available content in the uploaded documents related to the user's question.
-        Please respond:
-        "I'm sorry, I couldn't find any relevant information from the uploaded PDFs to answer that question."
-        [/INST]
-        """
-
     prompt = f"""
     [INST]
     You are SS IntelliBot, a helpful AI assistant with access to PDF-based knowledge.
@@ -104,16 +102,22 @@ def build_prompt(question):
     """
     return prompt
 
+
 def query_cortex(query, columns=None, filter={}):
     columns = columns or []
     db, schema = session.get_current_database(), session.get_current_schema()
     svc = root.databases[db].schemas[schema].cortex_search_services[st.session_state.selected_cortex_search_service]
-    results = svc.search(query, columns=columns, filter=filter, limit=st.session_state.num_retrieved_chunks).results
-    search_col = next(s["search_column"] for s in st.session_state.service_metadata if s["name"] == st.session_state.selected_cortex_search_service).lower()
-    context = "\n\n".join([f"Context {i+1}: {r.get(search_col, '[Missing chunk]')}" for i, r in enumerate(results)])
+    search_col = next(s["search_column"] for s in st.session_state.service_metadata if s["name"] == st.session_state.selected_cortex_search_service)
+    all_columns = list(set(columns + [search_col, "file_url", "relative_path"]))
+    results = svc.search(query, columns=all_columns, filter=filter, limit=st.session_state.num_retrieved_chunks).results
+    context = "\n\n".join([
+        f"Context {i+1} (File: {r.get('relative_path', 'unknown')}):\n{r.get(search_col.lower(), '[Missing chunk]')}"
+        for i, r in enumerate(results)
+    ])
     if st.session_state.debug:
         st.sidebar.text_area("📄 Context Documents", context, height=300)
     return context
+
 
 def apply_theme():
     if st.session_state.get("dark_mode"):
@@ -135,6 +139,7 @@ def apply_theme():
             </style>
         """, unsafe_allow_html=True)
 
+
 def init_config():
     with st.sidebar:
         st.toggle("🌓 Dark Mode", key="dark_mode", value=False)
@@ -151,11 +156,13 @@ def init_config():
             st.slider("Context Chunks", 1, 10, 5, key="num_retrieved_chunks")
             st.slider("Chat History Messages", 1, 10, 5, key="num_chat_messages")
 
+
 def handle_uploaded_pdf():
     uploaded_file = st.sidebar.file_uploader("📥 Upload PDF", type=["pdf"], key="pdf_uploader")
     if uploaded_file is not None:
         st.session_state.uploaded_pdf = uploaded_file.name
         st.sidebar.success(f"Uploaded: {uploaded_file.name}")
+
 
 def generate_summary():
     full_history = st.session_state.messages
@@ -177,6 +184,7 @@ def generate_summary():
     """
     summary = complete(st.session_state.model_name, prompt)
     return summary.strip()
+
 
 def add_custom_css():
     chat_left_bg = "#f4f4f4" if not st.session_state.get("dark_mode") else "#1e1e1e"
@@ -206,6 +214,7 @@ def add_custom_css():
         }}
         </style>
     """, unsafe_allow_html=True)
+
 
 def main():
     st.markdown("""<div style='background: linear-gradient(to right, #f2f2f2, #e0f7fa); padding: 25px 40px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 20px;'>
