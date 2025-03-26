@@ -80,6 +80,16 @@ def build_prompt(question):
     chat_text = "\n".join([msg["content"] for msg in chat_history if msg["role"] == "user"])
     summary = summarize_chat(chat_text, question) if chat_history else question
     context = query_cortex(summary)
+
+    if not context.strip():  # 🛑 If context is empty, show a fallback response
+        return """
+        [INST]
+        You are SS IntelliBot. There is no available content in the uploaded documents related to the user's question.
+        Please respond:
+        "I'm sorry, I couldn't find any relevant information from the uploaded PDFs to answer that question."
+        [/INST]
+        """
+
     prompt = f"""
     [INST]
     You are SS IntelliBot, a helpful AI assistant with access to PDF-based knowledge.
