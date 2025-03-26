@@ -221,7 +221,7 @@ def add_custom_css():
 
 
 def main():
-  st.markdown("""<div style='background: linear-gradient(to right, #f2f2f2, #e0f7fa); padding: 25px 40px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 20px;'>
+      st.markdown("""<div style='background: linear-gradient(to right, #f2f2f2, #e0f7fa); padding: 25px 40px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 20px;'>
         <div style='background-color: #7b2cbf; color: white; font-size: 40px; font-weight: bold; width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(123, 44, 191, 0.7); animation: pulseGlow 2s infinite;'>SS</div>
         <div style='text-align: left;'>
             <div style='font-size: 32px; font-weight: bold; color: #1f77b4;'>SS IntelliBot</div>
@@ -229,7 +229,7 @@ def main():
             <div style='font-size: 13px; color: #555; font-style: italic; margin-top: 8px;'>👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong> 🚀</div>
         </div>
     </div>""", unsafe_allow_html=True)
-    st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
 
 
     add_custom_css()
