@@ -110,10 +110,14 @@ def query_cortex(query, columns=None, filter={}):
     search_col = next(s["search_column"] for s in st.session_state.service_metadata if s["name"] == st.session_state.selected_cortex_search_service)
     all_columns = list(set(columns + [search_col, "file_url", "relative_path"]))
     results = svc.search(query, columns=all_columns, filter=filter, limit=st.session_state.num_retrieved_chunks).results
-    context = "\n\n".join([
-        f"Context {i+1} (File: {r.get('relative_path', 'unknown')}):\n{r.get(search_col.lower(), '[Missing chunk]')}"
-        for i, r in enumerate(results)
-    ])
+
+    def make_context(i, r):
+        file = r.get("relative_path", "unknown")
+        chunk = r.get(search_col.lower(), "[Missing chunk]")
+        return f"Context {i+1}: {file}:\n{chunk}"
+
+    context = "\n\n".join([make_context(i, r) for i, r in enumerate(results)])
+
     if st.session_state.debug:
         st.sidebar.text_area("📄 Context Documents", context, height=300)
     return context
