@@ -1,0 +1,4 @@
+streamlit
+snowflake==1.0.4
+snowflake-ml-python==1.7.4
+snowflake-snowpark-python
