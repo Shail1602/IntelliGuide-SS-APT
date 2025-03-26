@@ -10,15 +10,6 @@ MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
 import snowflake.connector
 
-conn = snowflake.connector.connect(
-    user=st.secrets["snowflake"]["user"],
-    password=st.secrets["snowflake"]["password"],
-    account=st.secrets["snowflake"]["account"],
-    warehouse=st.secrets["snowflake"]["warehouse"],
-    database=st.secrets["snowflake"]["database"],
-    schema=st.secrets["snowflake"]["schema"],
-    role=st.secrets["snowflake"]["role"]
-)
 connection_parameters = {
     "user": st.secrets["snowflake"]["user"],
     "password": st.secrets["snowflake"]["password"],
@@ -26,12 +17,9 @@ connection_parameters = {
     "warehouse": st.secrets["snowflake"]["warehouse"],
     "database": st.secrets["snowflake"]["database"],
     "schema": st.secrets["snowflake"]["schema"],
-    "role": st.secrets["snowflake"]["role"]  # optional fallback if not in secrets
+    "role": st.secrets["snowflake"]["role"]
 }
-cur = conn.cursor()
-cur.execute("SELECT CURRENT_DATE;")
-result = cur.fetchone()
-st.success(f"✅ Snowflake Connected. Current date: {result[0]}")
+
 session = Session.builder.configs(connection_parameters).create()
 root = Root(session)
 
