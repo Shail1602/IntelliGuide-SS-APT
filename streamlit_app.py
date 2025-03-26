@@ -146,8 +146,6 @@ def apply_theme():
 
 def init_config():
     with st.sidebar:
-        st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliBot", use_container_width=True)
-        st.caption("Ask Smart. Get Smarter.")
         st.toggle("🌓 Dark Mode", key="dark_mode", value=False)
         apply_theme()
         st.title("⚙️ Configuration")
@@ -156,7 +154,9 @@ def init_config():
         st.toggle("🐞 Debug Mode", key="debug", value=False)
         st.toggle("🕘 Use Chat History", key="use_chat_history", value=True)
         st.selectbox("📂 Filter by Topic", TOPICS, key="selected_topic")
-
+        st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliBot", use_container_width=True)
+        st.caption("Ask Smart. Get Smarter.")
+        
         with st.expander("🧠 Advanced Options"):
             st.selectbox("Select Model", MODELS, key="model_name")
             st.slider("Context Chunks", 1, 10, 5, key="num_retrieved_chunks")
