@@ -160,9 +160,9 @@ def init_config():
             st.slider("Context Chunks", 1, 10, 5, key="num_retrieved_chunks")
             st.slider("Chat History Messages", 1, 10, 5, key="num_chat_messages")
 
-    with st.sidebar.expander("📘 About IntelliBot"):
-    st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliBot", use_column_width=True)
-    st.caption("Ask Smart. Get Smarter.")
+        with st.sidebar.expander("📘 About IntelliBot"):
+            st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliBot", use_column_width=True)
+            st.caption("Ask Smart. Get Smarter.")
 
 def handle_uploaded_pdf():
     uploaded_file = st.sidebar.file_uploader("📥 Upload PDF", type=["pdf"], key="pdf_uploader")
