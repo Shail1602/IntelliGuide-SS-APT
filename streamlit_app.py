@@ -223,7 +223,7 @@ def add_custom_css():
 def main():
     st.markdown("""
     <div style='margin-top: 30px; text-align: center;'>
-        <img src='https://github.com/Shail1602/Inellibot/blob/fb161768f98e9691211089ef71a0114236669803/SS%20Intellibot.png' width='600'>
+        <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/fb161768f98e9691211089ef71a0114236669803/SS%20Intellibot.png' width='600'>
     </div>
 """, unsafe_allow_html=True)
     st.markdown("""<div style='background: linear-gradient(to right, #f2f2f2, #e0f7fa); padding: 25px 40px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 20px;'>
