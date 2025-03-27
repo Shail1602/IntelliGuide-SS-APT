@@ -172,7 +172,7 @@ def upload_to_snowflake_stage(uploaded_file):
     conn = snowflake.connector.connect(**connection_parameters)
     cs = conn.cursor()
     file_name = uploaded_file.name.replace(" ", "_")
-    staged_path = f"fomc/{file_name}"
+    staged_path = file_name
 
     try:
         put_query = f"PUT file://{tmp_path} {STAGE_NAME}/{staged_path} OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
@@ -190,7 +190,7 @@ def upload_to_snowflake_stage(uploaded_file):
         FROM (
             SELECT relative_path
             FROM directory({STAGE_NAME})
-            WHERE relative_path = 'fomc/{file_name}'
+            WHERE relative_path = '{file_name}'
         ),
         TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
         """
