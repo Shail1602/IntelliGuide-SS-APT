@@ -191,7 +191,7 @@ def upload_to_snowflake_stage(uploaded_file):
         FROM (
             SELECT relative_path
             FROM directory({STAGE_NAME})
-            WHERE relative_path ILIKE 'fomc/{file_name}%' 
+            WHERE relative_path ILIKE '%{file_name}%' 
         ),
         TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
         """
