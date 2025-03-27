@@ -174,24 +174,27 @@ def upload_to_snowflake_stage(uploaded_file):
     file_name = uploaded_file.name.replace(" ", "_")
 
     try:
-        put_query = f"PUT file://{tmp_path} {STAGE_NAME}/{file_name} OVERWRITE=TRUE"
+        put_query = f"PUT file://{tmp_path} {STAGE_NAME}/{file_name} OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
         cs.execute(put_query)
 
         cs.execute("USE DATABASE cortex_search_tutorial_db")
         cs.execute("USE SCHEMA public")
         chunk_sql = f"""
-        CREATE OR REPLACE TABLE cortex_search_tutorial_db.public.docs_chunks_table AS
+        INSERT INTO cortex_search_tutorial_db.public.docs_chunks_table
         SELECT
             relative_path,
             build_scoped_file_url({STAGE_NAME}, relative_path) AS file_url,
-            CONCAT(relative_path, ': ', func.chunk) AS chunk,
+            CONCAT(SPLIT_PART(relative_path, '/', -1), ': ', func.chunk) AS chunk,
             'English' AS language
-        FROM
-            directory({STAGE_NAME}),
-            TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
+        FROM (
+            SELECT relative_path
+            FROM directory({STAGE_NAME})
+            WHERE relative_path = '{file_name}'
+        ),
+        TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
         """
         cs.execute(chunk_sql)
-        
+        cs.execute("ALTER CORTEX SEARCH SERVICE cortex_search_tutorial_db.public.fomc_meeting REFRESH")
         st.success(f"✅ Uploaded and reindexed: {file_name}")
     except Exception as e:
         st.error(f"Failed to upload/index: {e}")
