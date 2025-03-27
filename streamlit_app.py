@@ -174,7 +174,7 @@ def upload_to_snowflake_stage(uploaded_file):
     file_name = uploaded_file.name.replace(" ", "_")
 
     try:
-        put_query = f"PUT file://{tmp_path} {STAGE_NAME}/{file_name} OVERWRITE=TRUE"
+        put_query = f"PUT file://{tmp_path} {STAGE_NAME}/ OVERWRITE=TRUE PARALLEL=4 AUTO_COMPRESS=TRUE"
         cs.execute(put_query)
 
         cs.execute("USE DATABASE cortex_search_tutorial_db")
