@@ -25,7 +25,7 @@ root = Root(session)
 
 TOPICS = ["All Topics", "Database Concepts", "AWS Framework", "Python for Beginners", "Azure", "PostgreSQL", "Kubernetes", "Pro Git", "OWASP"]
 SESSION_STATE_FILE = "session_state.json"
-
+STAGE_NAME = "@cortex_search_tutorial_db.public.fomc"
 
 def complete(model, prompt):
     return Complete(model, prompt, session=session).replace("$", "\$")
@@ -162,11 +162,47 @@ def init_config():
             st.slider("Context Chunks", 1, 10, 5, key="num_retrieved_chunks")
             st.slider("Chat History Messages", 1, 10, 5, key="num_chat_messages")
 
+def upload_to_snowflake_stage(uploaded_file):
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        tmp.write(uploaded_file.read())
+        tmp_path = tmp.name
+
+    conn = snowflake.connector.connect(**connection_parameters)
+    cs = conn.cursor()
+    file_name = uploaded_file.name.replace(" ", "_")
+
+    try:
+        put_query = f"PUT file://{tmp_path} {STAGE_NAME}/{file_name} OVERWRITE=TRUE"
+        cs.execute(put_query)
+
+        cs.execute("USE DATABASE cortex_search_tutorial_db")
+        cs.execute("USE SCHEMA public")
+        chunk_sql = f"""
+        CREATE OR REPLACE TABLE cortex_search_tutorial_db.public.docs_chunks_table AS
+        SELECT
+            relative_path,
+            build_scoped_file_url({STAGE_NAME}, relative_path) AS file_url,
+            CONCAT(relative_path, ': ', func.chunk) AS chunk,
+            'English' AS language
+        FROM
+            directory({STAGE_NAME}),
+            TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
+        """
+        cs.execute(chunk_sql)
+        cs.execute("ALTER CORTEX SEARCH SERVICE cortex_search_tutorial_db.public.fomc_meeting REFRESH NOW")
+        st.success(f"✅ Uploaded and reindexed: {file_name}")
+    except Exception as e:
+        st.error(f"Failed to upload/index: {e}")
+    finally:
+        cs.close()
+        conn.close()
+
 def handle_uploaded_pdf():
     uploaded_file = st.sidebar.file_uploader("📥 Upload PDF", type=["pdf"], key="pdf_uploader")
     if uploaded_file is not None:
         st.session_state.uploaded_pdf = uploaded_file.name
         st.sidebar.success(f"Uploaded: {uploaded_file.name}")
+        upload_to_snowflake_stage(uploaded_file)
 
 
 def generate_summary():
