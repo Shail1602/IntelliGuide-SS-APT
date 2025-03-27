@@ -4,6 +4,7 @@ from snowflake.cortex import Complete
 from snowflake.snowpark.session import Session
 import json
 import os
+import tempfile
 
 APP_NAME = "SS IntelliBot"
 st.set_page_config(APP_NAME, page_icon="🤖", layout="wide")
