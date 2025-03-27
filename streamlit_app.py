@@ -172,9 +172,10 @@ def upload_to_snowflake_stage(uploaded_file):
     conn = snowflake.connector.connect(**connection_parameters)
     cs = conn.cursor()
     file_name = uploaded_file.name.replace(" ", "_")
+    staged_path = f"fomc/{file_name}"
 
     try:
-        put_query = f"PUT file://{tmp_path} {STAGE_NAME}/{file_name} OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
+        put_query = f"PUT file://{tmp_path} {STAGE_NAME}/{staged_path} OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
         cs.execute(put_query)
 
         cs.execute("USE DATABASE cortex_search_tutorial_db")
@@ -194,7 +195,6 @@ def upload_to_snowflake_stage(uploaded_file):
         TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
         """
         cs.execute(chunk_sql)
-        cs.execute("ALTER CORTEX SEARCH SERVICE cortex_search_tutorial_db.public.fomc_meeting REFRESH")
         st.success(f"✅ Uploaded and reindexed: {file_name}")
     except Exception as e:
         st.error(f"Failed to upload/index: {e}")
