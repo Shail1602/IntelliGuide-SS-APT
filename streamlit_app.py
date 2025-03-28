@@ -5,6 +5,7 @@ from snowflake.snowpark.session import Session
 import snowflake.connector
 import json
 import os
+import shutil
 import tempfile
 
 APP_NAME = "SS IntelliBot"
