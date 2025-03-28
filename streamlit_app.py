@@ -176,7 +176,7 @@ def upload_to_snowflake_stage(uploaded_file):
     staged_path = f"{file_name}" 
     target_temp_path = os.path.join(tempfile.gettempdir(), file_name)
     shutil.copy(tmp_path, target_temp_path)
-    staged_file_path = f"fomc/{file_name}"
+    staged_file_path = file_name
     st.write("Uploading to:", f"{target_temp_path}")
     st.write("Uploading to:", f"{uploaded_file}")
     st.write("Uploading to:", f"{staged_file_path}")
