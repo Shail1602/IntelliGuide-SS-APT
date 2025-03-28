@@ -269,8 +269,9 @@ def main():
         <div style='text-align: left;'>
             <div style='font-size: 32px; font-weight: bold; color: #1f77b4;'>SS IntelliBot</div>
             <div style='font-size: 16px; color: #333;'>Precision. Speed. Knowledge. — Your AI companion for data-driven excellence.</div>
-            <div style='font-size: 13px; color: #555; font-style: italic; margin-top: 8px;'>👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong> 🚀</div>
+            <div style='font-size: 13px; color: #555; font-style: italic; margin-top: 8px;'>👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong></div>
         </div>
+        <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg' alt='DB Logo' style='height: 70px; border-radius: 8px;'>
     </div>""", unsafe_allow_html=True)
     st.markdown("<hr>", unsafe_allow_html=True)
 
