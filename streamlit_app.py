@@ -172,11 +172,11 @@ def upload_to_snowflake_stage(uploaded_file):
 
     conn = snowflake.connector.connect(**connection_parameters)
     cs = conn.cursor()
-    file_name = uploaded_file.name.replace(" ", "_")
+    file_name = os.path.basename(uploaded_file.name).replace(" ", "_")
     staged_path = f"{file_name}" 
     target_temp_path = os.path.join(tempfile.gettempdir(), file_name)
     shutil.copy(tmp_path, target_temp_path)
-
+    st.write("Uploading to:", f"{STAGE_NAME}/fomc/{file_name}")
     try:
         put_query = f"PUT file://{target_temp_path} {STAGE_NAME}/{file_name}  OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
         cs.execute(put_query)
