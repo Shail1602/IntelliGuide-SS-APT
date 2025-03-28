@@ -173,10 +173,11 @@ def upload_to_snowflake_stage(uploaded_file):
     cs = conn.cursor()
     file_name = uploaded_file.name.replace(" ", "_")
     staged_path = f"{file_name}" 
-
+    target_temp_path = os.path.join(tempfile.gettempdir(), file_name)
+    shutil.copy(tmp_path, target_temp_path)
 
     try:
-        put_query = f"PUT file://{tmp_path} {STAGE_NAME}/{file_name}  OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
+        put_query = f"PUT file://{target_temp_path} {STAGE_NAME}/{file_name}  OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
         cs.execute(put_query)
 
         cs.execute("USE DATABASE cortex_search_tutorial_db")
@@ -191,7 +192,7 @@ def upload_to_snowflake_stage(uploaded_file):
         FROM (
             SELECT relative_path
             FROM directory({STAGE_NAME})
-            WHERE relative_path ILIKE '%{file_name}%' 
+            WHERE relative_path ILIKE 'fomc/{file_name}%' 
         ),
         TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
         """
