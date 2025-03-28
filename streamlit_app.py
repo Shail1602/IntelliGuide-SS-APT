@@ -274,7 +274,7 @@ def main():
         </div>
     </div>
     <div>
-        <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg' alt='DB Logo' style='height: 200px; border-radius: 8px;'>
+        <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg' alt='DB Logo' style='height: 100px; border-radius: 8px;'>
         </div>
         </div>
     """, unsafe_allow_html=True)
