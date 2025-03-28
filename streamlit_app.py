@@ -182,6 +182,11 @@ def upload_to_snowflake_stage(uploaded_file):
         put_query = f"PUT file://{target_temp_path} {STAGE_NAME}  OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
         cs.execute(put_query)
 
+        st.write("📄 Files currently in stage:")
+        cs.execute(f"SELECT relative_path FROM directory({STAGE_NAME}) ORDER BY last_modified DESC LIMIT 10")
+        for row in cs.fetchall():
+            st.write("•", row[0])
+
         cs.execute("USE DATABASE cortex_search_tutorial_db")
         cs.execute("USE SCHEMA public")
         chunk_sql = f"""
