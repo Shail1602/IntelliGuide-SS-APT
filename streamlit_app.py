@@ -177,9 +177,9 @@ def upload_to_snowflake_stage(uploaded_file):
     target_temp_path = os.path.join(tempfile.gettempdir(), file_name)
     shutil.copy(tmp_path, target_temp_path)
     st.write("Uploading to:", f"{STAGE_NAME}/fomc/{file_name}")
-    staged_file_path = f"fomc/{file_name}"
+    staged_file_path = file_name
     try:
-        put_query = f"PUT file://{target_temp_path} {STAGE_NAME}/{staged_file_path}  OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
+        put_query = f"PUT file://{target_temp_path} {STAGE_NAME}/{file_name}  OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
         cs.execute(put_query)
 
         cs.execute("USE DATABASE cortex_search_tutorial_db")
