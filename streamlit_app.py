@@ -214,6 +214,21 @@ def upload_to_snowflake_stage(uploaded_file):
             """
             cs.execute(chunk_sql)
             cs.execute("ALTER STAGE cortex_search_tutorial_db.public.fomc REFRESH")
+            cs.execute("""
+            CREATE OR REPLACE CORTEX SEARCH SERVICE cortex_search_tutorial_db.public.fomc_meeting
+                ON chunk
+                ATTRIBUTES language
+                WAREHOUSE = cortex_search_tutorial_wh
+                TARGET_LAG = '1 minute'
+                AS (
+                    SELECT
+                        chunk,
+                        relative_path,
+                        file_url,
+                        language
+                    FROM cortex_search_tutorial_db.public.docs_chunks_table
+                );
+            """)
             st.success(f"✅ Uploaded and Reindexed the file : {file_name}")
     except Exception as e:
         st.error(f"Failed to upload/index: {e}")
