@@ -181,11 +181,9 @@ def upload_to_snowflake_stage(uploaded_file):
     try:
         put_query = f"PUT file://{target_temp_path} {STAGE_NAME}  OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
         cs.execute(put_query)
-        for row in cs.fetchall():
-            st.write("•", row[0])
-
         cs.execute("USE DATABASE cortex_search_tutorial_db")
         cs.execute("USE SCHEMA public")
+        cs.execute(f"ALTER STAGE cortex_search_tutorial_db.public.fomc REFRESH")
         chunk_sql = f"""
         INSERT INTO cortex_search_tutorial_db.public.docs_chunks_table
         SELECT
