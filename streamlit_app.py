@@ -233,9 +233,9 @@ def upload_to_snowflake_stage(uploaded_file):
             
             os.remove(tmp_path)
             if os.path.exists(target_temp_path):
-            os.remove(target_temp_path)       
+                os.remove(target_temp_path)       
             if "uploaded_pdf" in st.session_state:
-            del st.session_state["uploaded_pdf"]
+                del st.session_state["uploaded_pdf"]
             
     except Exception as e:
         st.error(f"Failed to upload/index: {e}")
