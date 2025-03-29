@@ -198,23 +198,23 @@ def upload_to_snowflake_stage(uploaded_file):
         cs.execute(f"ALTER STAGE cortex_search_tutorial_db.public.fomc REFRESH")
         
         for idx, chunk in enumerate(extracted_text):
-        chunk_sql = f"""
-        INSERT INTO cortex_search_tutorial_db.public.docs_chunks_table
-        SELECT
-            relative_path,
-            build_scoped_file_url({STAGE_NAME}, relative_path) AS file_url,
-            CONCAT(SPLIT_PART(relative_path, '/', -1), ': ', func.chunk) AS chunk,
-            'English' AS language
-        FROM (
-            SELECT relative_path
-            FROM directory({STAGE_NAME})
-            WHERE relative_path = ('{file_name}') 
-        ),
-        TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
-        """
-        cs.execute(chunk_sql)
-        cs.execute("ALTER STAGE cortex_search_tutorial_db.public.fomc REFRESH")
-        st.success(f"✅ Uploaded and Reindexed the file : {file_name}")
+            chunk_sql = f"""
+            INSERT INTO cortex_search_tutorial_db.public.docs_chunks_table
+            SELECT
+                relative_path,
+                build_scoped_file_url({STAGE_NAME}, relative_path) AS file_url,
+                CONCAT(SPLIT_PART(relative_path, '/', -1), ': ', func.chunk) AS chunk,
+                'English' AS language
+            FROM (
+                SELECT relative_path
+                FROM directory({STAGE_NAME})
+                WHERE relative_path = ('{file_name}') 
+            ),
+            TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
+            """
+            cs.execute(chunk_sql)
+            cs.execute("ALTER STAGE cortex_search_tutorial_db.public.fomc REFRESH")
+            st.success(f"✅ Uploaded and Reindexed the file : {file_name}")
     except Exception as e:
         st.error(f"Failed to upload/index: {e}")
     finally:
