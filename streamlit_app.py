@@ -199,9 +199,8 @@ def upload_to_snowflake_stage(uploaded_file):
         TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
         """
         cs.execute(chunk_sql)
-        st.success(f"✅ Uploaded and reindexed: {file_name}")
         cs.execute("ALTER STAGE cortex_search_tutorial_db.public.fomc REFRESH")
-        st.success(f"✅ Stage Refreshed for: {file_name}")
+        st.success(f"✅ Uploaded and Reindexed the file : {file_name}")
     except Exception as e:
         st.error(f"Failed to upload/index: {e}")
     finally:
