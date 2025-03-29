@@ -178,6 +178,17 @@ def upload_to_snowflake_stage(uploaded_file):
     target_temp_path = os.path.join(tempfile.gettempdir(), file_name)
     shutil.copy(tmp_path, target_temp_path)
     staged_file_path = f"fomc/{file_name}"
+
+    extracted_text = []
+    try:
+        with fitz.open(tmp_path) as doc:
+            for page in doc:
+                text = page.get_text()
+                if text.strip():
+                    extracted_text.append(text.strip())
+    except Exception as e:
+        st.error(f"Failed to extract text: {e}")
+        return
     
     try:
         put_query = f"PUT file://{target_temp_path} {STAGE_NAME}  OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
@@ -185,6 +196,8 @@ def upload_to_snowflake_stage(uploaded_file):
         cs.execute("USE DATABASE cortex_search_tutorial_db")
         cs.execute("USE SCHEMA public")
         cs.execute(f"ALTER STAGE cortex_search_tutorial_db.public.fomc REFRESH")
+        
+        for idx, chunk in enumerate(extracted_text):
         chunk_sql = f"""
         INSERT INTO cortex_search_tutorial_db.public.docs_chunks_table
         SELECT
