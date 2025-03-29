@@ -181,9 +181,6 @@ def upload_to_snowflake_stage(uploaded_file):
     try:
         put_query = f"PUT file://{target_temp_path} {STAGE_NAME}  OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
         cs.execute(put_query)
-
-        st.write("📄 Files currently in stage:")
-        cs.execute(f"SELECT relative_path FROM directory({STAGE_NAME}) ORDER BY last_modified DESC LIMIT 10")
         for row in cs.fetchall():
             st.write("•", row[0])
 
@@ -205,6 +202,8 @@ def upload_to_snowflake_stage(uploaded_file):
         """
         cs.execute(chunk_sql)
         st.success(f"✅ Uploaded and reindexed: {file_name}")
+        cs.execute("ALTER STAGE cortex_search_tutorial_db.public.fomc REFRESH")
+        st.success(f"✅ Stage Refreshed for: {file_name}")
     except Exception as e:
         st.error(f"Failed to upload/index: {e}")
     finally:
