@@ -7,6 +7,7 @@ import json
 import os
 import shutil
 import tempfile
+import fitz
 
 APP_NAME = "SS IntelliBot"
 st.set_page_config(APP_NAME, page_icon="🤖", layout="wide")
