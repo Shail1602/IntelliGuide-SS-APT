@@ -9,6 +9,9 @@ st.set_page_config(page_title="📚 APT Tour Brochure Library", layout="wide")
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = False
 
+if "selected_pdf" not in st.session_state:
+    st.session_state.selected_pdf = None
+
 # Sidebar toggle for Dark Mode
 with st.sidebar:
     st.toggle("🌓 Dark Mode", key="dark_mode")
@@ -106,10 +109,11 @@ def extract_pdf_info(file_path):
                 "days": days.group(0) if days else "N/A",
                 "route": route.group(0) if route else "N/A",
                 "tags": tags or ["General"],
-                "search_blob": f"{title.lower()} {route.group(0).lower() if route else ''} {tags}".lower()
+                "search_blob": f"{title.lower()} {route.group(0).lower() if route else ''} {tags}".lower(),
+                "text_preview": text[:2000]  # brief preview
             }
     except Exception:
-        return {"title": "N/A", "code": "N/A", "days": "N/A", "route": "N/A", "tags": ["Error"], "search_blob": ""}
+        return {"title": "N/A", "code": "N/A", "days": "N/A", "route": "N/A", "tags": ["Error"], "search_blob": "", "text_preview": ""}
 
 pdf_files = sorted([f for f in os.listdir(PDF_DIR) if f.lower().endswith(".pdf")])
 indexed_files = [(f, extract_pdf_info(os.path.join(PDF_DIR, f))) for f in pdf_files]
@@ -131,18 +135,36 @@ if current_files:
                 file_path = os.path.join(PDF_DIR, filename)
                 clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
                 with row[j]:
+                    if st.button(f"{info['code']} - {clean_title}", key=f"btn_{filename}"):
+                        st.session_state.selected_pdf = filename
                     st.markdown(f"""
                     <div class='card'>
-                        <h4 style='color:#1f3a93;'>📄 {info['code']} - {clean_title}</h4>
-                        <ul style='font-size:15px; list-style-type:none; padding-left: 0;'>
-                            <li>⏱️ <strong>Duration:</strong> {info['days']}</li>
-                            <li>🚩 <strong>Route:</strong> {info['route']}</li>
-                            <li>🏷️ <strong>Tags:</strong> {' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</li>
-                        </ul>
-                        <a href="{os.path.join(PDF_DIR, filename)}" download>
-                            <button style='margin-top: 10px;'>📥 Download PDF</button>
-                        </a>
+                        <h5 style='color:#1f3a93;'>📄 {info['code']} - {clean_title}</h5>
+                        <p><strong>Duration:</strong> {info['days']}<br><strong>Route:</strong> {info['route']}</p>
+                        <div>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
                     </div>
                     """, unsafe_allow_html=True)
+
+    if st.session_state.selected_pdf:
+        file_path = os.path.join(PDF_DIR, st.session_state.selected_pdf)
+        info = next(info for f, info in indexed_files if f == st.session_state.selected_pdf)
+        clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
+        st.markdown(f"""
+        <div class='card'>
+            <h4 style='color:#1f3a93;'>🧭 {clean_title}</h4>
+            <ul style='font-size:15px; list-style-type:none; padding-left: 0;'>
+                <li>📌 <strong>Code:</strong> <span style='color: green;'>{info['code']}</span></li>
+                <li>⏱️ <strong>Duration:</strong> {info['days']}</li>
+                <li>🚩 <strong>Route:</strong> {info['route']}</li>
+                <li>🏷️ <strong>Tags:</strong> {' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+
+        with open(file_path, "rb") as f:
+            st.download_button("📥 Download PDF", f, file_name=st.session_state.selected_pdf)
+
+        if st.checkbox("📄 Show Text Preview (First 2 Pages)"):
+            st.text_area("📘 PDF Preview", info["text_preview"] + "\n\n...truncated", height=400)
 else:
     st.warning("No PDF files match your search.")
