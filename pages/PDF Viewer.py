@@ -5,7 +5,18 @@ import re
 
 PDF_DIR = "pdfs"
 st.set_page_config(page_title="📚 APT Tour Brochure Library", layout="wide")
-st.title("🌍 APT Tour PDF Library")
+
+st.markdown("""
+    <div style='background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e"); 
+                background-size: cover; 
+                background-position: center; 
+                padding: 30px; border-radius: 16px; 
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
+                margin-bottom: 30px; color: white;'>
+        <h1 style='font-size: 38px; margin-bottom: 5px;'>🌍 APT Tour PDF Library</h1>
+        <p style='font-size: 18px;'>Curated luxury tours, now just a click away.</p>
+    </div>
+""", unsafe_allow_html=True)
 
 search_query = st.text_input("🔍 Search by code, title, or location (e.g., Broome, Darwin, Safari):").strip().lower()
 
@@ -13,23 +24,48 @@ st.markdown("""
     <style>
     .summary-card {
         border: 1px solid #e0e0e0;
-        padding: 20px;
-        border-radius: 10px;
-        background-color: #fafafa;
-        margin-bottom: 20px;
+        padding: 25px;
+        border-radius: 16px;
+        background: linear-gradient(to bottom, #ffffff, #f9fbfd);
+        margin-bottom: 24px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        transition: transform 0.2s;
+    }
+    .summary-card:hover {
+        transform: scale(1.01);
     }
     .badge {
         display: inline-block;
-        background-color: #1f77b4;
+        background: #1f77b4;
         color: white;
-        padding: 3px 10px;
-        border-radius: 12px;
+        padding: 4px 12px;
+        border-radius: 20px;
         font-size: 13px;
-        margin-right: 5px;
+        margin-right: 6px;
         margin-top: 5px;
+    }
+    .badge::before {
+        content: attr(data-icon); 
+        margin-right: 5px;
     }
     </style>
 """, unsafe_allow_html=True)
+
+def tag_icon(tag):
+    return {
+        "Ocean Cruise": "🛳️",
+        "River Cruise": "🚢",
+        "Land Tour": "🚍",
+        "4WD": "🚙",
+        "Europe": "🇪🇺",
+        "Asia": "🌏",
+        "Australia": "🇦🇺",
+        "New Zealand": "🇳🇿",
+        "Africa": "🌍",
+        "South America": "🌎",
+        "General": "📌",
+        "Error": "⚠️"
+    }.get(tag, "📌")
 
 def extract_pdf_info(file_path):
     try:
@@ -84,12 +120,12 @@ if current_files:
 
     st.markdown(f"""
     <div class='summary-card'>
-      <h4>🧭 <strong>{clean_title}</strong></h4>
+      <h3 style='color: #1f3a93;'>🧭 {clean_title}</h3>
       <ul style='font-size:15px; line-height: 1.7; list-style-type: none; padding-left: 0;'>
         <li>📌 <strong>Code:</strong> <span style='color: green;'>{info['code']}</span></li>
         <li>⏱️ <strong>Duration:</strong> {info['days']}</li>
         <li>🚩 <strong>Route:</strong> {info['route']}</li>
-        <li>🏷️ <strong>Tags:</strong> {' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</li>
+        <li>🏷️ <strong>Tags:</strong> {' '.join([f"<span class='badge' data-icon='{tag_icon(tag)}'>{tag}</span>" for tag in info['tags']])}</li>
       </ul>
     </div>
     """, unsafe_allow_html=True)
