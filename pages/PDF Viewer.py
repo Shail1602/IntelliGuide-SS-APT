@@ -66,7 +66,7 @@ st.markdown("""
         padding: 20px;
         margin: 10px;
         transition: all 0.3s ease;
-        min-height: 310px;
+        min-height: 320px;
         height: 100%;
         display: flex;
         flex-direction: column;
