@@ -334,7 +334,7 @@ def add_custom_css():
                 """, unsafe_allow_html=True)
 
 def main():
-          st.markdown("""
+    st.markdown("""
             <div style='
             position: relative;
             background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1470&q=80");
@@ -361,7 +361,7 @@ def main():
                 </ul>
               </div>
             </div>
-        """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)      
 
     add_custom_css()
     init_service_metadata()
