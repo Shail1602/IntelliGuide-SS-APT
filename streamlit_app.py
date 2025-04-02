@@ -386,8 +386,7 @@ def add_custom_css():
             """, unsafe_allow_html=True)
 def main():
     st.markdown("""
-                <div style='
-                    background: linear-gradient(to right, #e0f7fa, #ffffff);
+                <div style='background: linear-gradient(to right, #e0f7fa, #ffffff);
                     padding: 25px 40px;
                     border-radius: 12px;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -395,7 +394,6 @@ def main():
                     display: flex;
                     align-items: center;
                     justify-content: space-between;'>
-                
                     <div style='display: flex; align-items: center; gap: 18px;'>
                         <div style='
                             background-color: #7b2cbf;
