@@ -186,7 +186,9 @@ if current_files:
                     <div class='center-btn'>
                 """, unsafe_allow_html=True)
                 with open(file_path, "rb") as f:
-                    st.download_button("📅 Download PDF", f, file_name=filename, key=f"dl_{filename}")
+                col.markdown("<div class='center-btn'>", unsafe_allow_html=True)
+                st.download_button("📅 Download PDF", f, file_name=filename, key=f"dl_{filename}")
+                col.markdown("</div>", unsafe_allow_html=True)
                 st.markdown("</div></div>", unsafe_allow_html=True)
 else:
     st.warning("No PDF files match your search.")
