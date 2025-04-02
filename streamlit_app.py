@@ -332,7 +332,17 @@ def add_custom_css():
                     }
                 </style>
                 """, unsafe_allow_html=True)
-
+    st.markdown("""
+                <style>
+                    .stChatInput input {
+                        background-color: #f0f8ff !important;
+                        border: 1px solid #ccc !important;
+                        border-radius: 10px !important;
+                        padding: 10px !important;
+                    }
+                </style>
+                """, unsafe_allow_html=True)
+    
 def main():
     st.markdown("""
         <div style='
@@ -440,6 +450,11 @@ def main():
 
         with st.expander("📢 Feedback"):
             st.radio("How helpful was the response?", ["👍 Excellent", "👌 Good", "👎 Needs Improvement"])
-
+    
+    st.markdown("""
+            <div style='text-align: center; font-size: 13px; color: #888; margin-top: 40px;'>
+              SS IntelliGuide | Powered by APT Travel Brochures • Designed by Shailesh & Saumya
+            </div>
+            """, unsafe_allow_html=True)
 if __name__ == "__main__":
     main()
