@@ -452,7 +452,7 @@ def main():
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            margin-bottom: 30px;'>
+            margin-bottom: 10px;'>
               <div style='
               background: rgba(0, 0, 0, 0.5);
               color: white;
