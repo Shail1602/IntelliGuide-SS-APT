@@ -12,9 +12,8 @@ if "dark_mode" not in st.session_state:
 if "selected_pdf" not in st.session_state:
     st.session_state.selected_pdf = None
 
-# Sidebar toggle for Dark Mode
 with st.sidebar:
-    st.toggle("🌓 Dark Mode", key="dark_mode")
+    st.toggle("🌃 Dark Mode", key="dark_mode")
 
 # Dynamic theme based on Dark Mode
 if st.session_state.dark_mode:
@@ -143,7 +142,8 @@ start = (page - 1) * page_size
 end = start + page_size
 current_files = filtered[start:end]
 
-selected_details = None
+params = st.query_params
+selected_file = params.get("file", None)
 
 if current_files:
     rows = [st.columns(3) for _ in range((len(current_files) + 2) // 3)]
@@ -158,13 +158,14 @@ if current_files:
                     <strong>📄 {info['code']} – {clean_title}</strong><br>
                     <small>⏱️ {info['days']} | 🚩 {info['route']}</small><br>
                     {' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}
-                    <form method='post'>
-                        <button name='preview' type='submit' formaction='?file={filename}'>🔍 Preview</button>
-                    </form>
+                    <br><br>
+                    <a href='?file={filename}'><button>🔍 Preview</button></a>
                 </div>
                 """, unsafe_allow_html=True)
+                if idx == 0:
+                    with open(file_path, "rb") as f:
+                        st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_first_{filename}")
 
-    selected_file = st.experimental_get_query_params().get("file", [None])[0]
     if selected_file:
         info = next((i for f, i in current_files if f == selected_file), None)
         if info:
@@ -179,10 +180,6 @@ if current_files:
                     <br>
                     <a href='/'><button>❌ Close</button></a>
                     <br><br>
-                    <form method="post">
-                        <button name="download" type="submit">📥 Download PDF</button>
-                    </form>
-                </div>
             """, unsafe_allow_html=True)
             with open(file_path, "rb") as f:
                 st.download_button("📥 Download PDF", f, file_name=selected_file, key=f"dl_modal_{selected_file}")
