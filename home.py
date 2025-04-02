@@ -406,9 +406,22 @@ def add_custom_css():
         }
         </style>
     """, unsafe_allow_html=True)
+    st.markdown("""
+            <style>
+            button[kind="primary"] {
+                background-color: #1f77b4 !important;
+                color: white !important;
+                font-weight: 600;
+                font-size: 16px;
+                border-radius: 8px;
+            }
+            button[kind="primary"]:hover {
+                background-color: #155a8a !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
 def main():
-    if st.button("📂 Open PDF Viewer"):
-        st.switch_page("pages/PDF Viewer.py")
     st.markdown("""
                 <div class='header-animate' style='background: linear-gradient(to right, #e0f7fa, #ffffff);
                     padding: 25px 40px;
@@ -436,7 +449,7 @@ def main():
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-
+    
 
     add_custom_css()
     init_service_metadata()
@@ -474,6 +487,12 @@ def main():
               </div>
             </div>
         """, unsafe_allow_html=True) 
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+    if st.button("📂 Browse PDF Brochures", use_container_width=True):
+        st.switch_page("pages/PDF Viewer.py")
+
 
     for i, msg in enumerate(st.session_state.messages):
         css_class = "chat-left" if msg["role"] == "assistant" else "chat-right"
