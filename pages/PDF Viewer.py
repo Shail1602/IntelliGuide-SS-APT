@@ -66,7 +66,7 @@ st.markdown("""
         padding: 20px;
         margin: 10px;
         transition: all 0.3s ease;
-        height: 500px;
+        min-height: 430px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -113,7 +113,7 @@ def extract_pdf_info(file_path):
                 "route": route.group(0) if route else "N/A",
                 "tags": tags or ["General"],
                 "search_blob": f"{title.lower()} {route.group(0).lower() if route else ''} {tags}".lower(),
-                "text_preview": text[:2000]
+                "text_preview": text[:1000]  # Shorter preview
             }
     except Exception:
         return {"title": "N/A", "code": "N/A", "days": "N/A", "route": "N/A", "tags": ["Error"], "search_blob": "", "text_preview": ""}
@@ -142,10 +142,10 @@ if current_files:
                     <div>
                         <strong>📄 {info['code']} – {clean_title}</strong><br>
                         <small>⏱️ {info['days']} | 🚩 {info['route']}</small><br>
-                        <div style='margin-top: 6px;'>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
+                        <div style='margin-top: 6px; display: flex; flex-wrap: wrap;'>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
                         <div style='margin-top: 12px;'>
                             <strong>Preview:</strong>
-                            <div style='font-size: 13px; white-space: pre-wrap; max-height: 140px; overflow-y: auto;'>{info['text_preview']}</div>
+                            <div style='font-size: 13px; white-space: pre-wrap; max-height: 100px; overflow-y: auto;'>{info['text_preview']}</div>
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
