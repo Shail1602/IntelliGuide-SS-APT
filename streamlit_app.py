@@ -149,7 +149,7 @@ def apply_theme():
         st.markdown("""
             <style>
             body, .stApp {
-                background-color: linear-gradient(to right, #d0f0fd, #ffffff);
+                background-color: linear-gradient(to right, #edf6f9, #d0f0fd);
                 color: #000000;
             }
             </style>
@@ -340,6 +340,18 @@ def add_custom_css():
                         border-radius: 10px !important;
                         padding: 10px !important;
                     }
+                </style>
+                """, unsafe_allow_html=True)
+    st.markdown("""
+                <style>
+                @keyframes fadeIn {
+                    0% { opacity: 0; transform: translateY(20px); }
+                    100% { opacity: 1; transform: translateY(0); }
+                }
+                
+                .stApp > div {
+                    animation: fadeIn 0.7s ease-in-out;
+                }
                 </style>
                 """, unsafe_allow_html=True)
     
