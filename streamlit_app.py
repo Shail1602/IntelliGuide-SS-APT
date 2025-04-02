@@ -9,7 +9,7 @@ import shutil
 import tempfile
 import fitz
 
-APP_NAME = "SS IntelliBot"
+APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🤖", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
@@ -27,7 +27,7 @@ connection_parameters = {
 session = Session.builder.configs(connection_parameters).create()
 root = Root(session)
 
-TOPICS = ["All Topics", "Database Concepts", "AWS Framework", "Python for Beginners", "Azure", "PostgreSQL", "Kubernetes", "Pro Git", "OWASP"]
+TOPICS = ["All Locations", "Europe", "Australia", "New-Zealand", "Asia", "Africa", "South-America", "Antartica", "North-America"]
 SESSION_STATE_FILE = "session_state.json"
 STAGE_NAME = "@apt_pdf_db.public.apt"
 
@@ -94,7 +94,7 @@ def build_prompt(question):
     context = query_cortex(summary)
     prompt = f"""
     [INST]
-    You are SS IntelliBot, a helpful AI assistant with access to PDF-based knowledge.
+    You are SS IntelliGuide, a helpful AI assistant with access to APT PDF-based knowledge.
     Use the provided <context> and <chat_history> to answer user questions.
     Respond clearly, briefly, and helpfully.
 
@@ -316,8 +316,8 @@ def main():
     <div style='display: flex; align-items: center; gap: 20px;'>
         <div style='background-color: #7b2cbf; color: white; font-size: 50px; font-weight: bold; width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(123, 44, 191, 0.7); animation: pulseGlow 2s infinite;'>SS</div>
         <div style='text-align: left;'>
-            <div style='font-size: 32px; font-weight: bold; color: #1f77b4;'>SS IntelliBot</div>
-            <div style='font-size: 16px; color: #333;'>Precision. Speed. Knowledge. — Your AI companion for data-driven excellence.</div>
+            <div style='font-size: 32px; font-weight: bold; color: #1f77b4;'>SS IntelliGuide</div>
+            <div style='font-size: 16px; color: #333;'>Precision. Speed. Knowledge. — Your AI companion for APT Travels.</div>
             <div style='font-size: 13px; color: #555; font-style: italic; margin-top: 8px;'>👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong></div>
         </div>
     </div>
@@ -336,20 +336,19 @@ def main():
 
     if len(st.session_state.messages) == 0:
         st.markdown("""<div class='hero' style='margin-top: 10px;'>
-            👋 Welcome to SS IntelliBot! Ask any question based on our uploaded documents:
+            👋 Welcome to SS IntelliGuide! Ask any question based on our uploaded documents:
             <br><br>
-            <b>Topics Available:</b> Database Concepts, AWS Framework, Python for Beginners,
-            Azure, PostgreSQL, Kubernetes, Pro Git, and OWASP.
+            <b>Brochures Available:</b> Enchanting Japan, Vietnam & Cambodia, Ancient Kingdoms of Asia, European River Cruises, and more.
             <br><br>
-            Type your question below to get started!
+            Type your question below to explore unforgettable experiences!
             <br><br>
             <b>Try asking:</b>
             <ul style='list-style-type: none; padding: 0;'>
-                <li>🔍 What is the difference between RDS and Redshift?</li>
-                <li>🤖 How do I deploy a model in Kubernetes?</li>
-                <li>🔐 What are OWASP Top 10 vulnerabilities?</li>
-                <li>🐘 How to connect Python to PostgreSQL?</li>
-                <li>☁️ What are key services in AWS Framework?</li>
+                <li>🌏 What Signature Experiences are included in the Vietnam & Cambodia tour?</li>
+                <li>🚂 What are the scenic highlights of the Danube River Cruise?</li>
+                <li>🗾 What cities do we visit on the Enchanting Japan tour?</li>
+                <li>🏰 Are Freedom of Choice activities available in Prague?</li>
+                <li>📅 What is the itinerary for the Ancient Kingdoms of Japan and South Korea?</li>
             </ul>
         </div>""", unsafe_allow_html=True)
 
