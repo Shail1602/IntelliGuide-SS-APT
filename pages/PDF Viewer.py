@@ -82,21 +82,7 @@ st.markdown("""
         padding: 4px 12px;
         border-radius: 20px;
         font-size: 13px;
-        margin-right: 6px;
-        margin-top: 5px;
-    }
-    .modal {
-        position: fixed;
-        top: 10%;
-        left: 50%;
-        transform: translate(-50%, 0);
-        width: 60%;
-        max-height: 70vh;
-        overflow-y: auto;
-        z-index: 1000;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        margin: 4px 4px 0 0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -143,9 +129,6 @@ start = (page - 1) * page_size
 end = start + page_size
 current_files = filtered[start:end]
 
-params = st.query_params
-selected_file = params.get("file", [None])[0] if params.get("file") else None
-
 if current_files:
     rows = [st.columns(3) for _ in range((len(current_files) + 2) // 3)]
     for idx, (filename, info) in enumerate(current_files):
@@ -158,30 +141,13 @@ if current_files:
                 <div class='card'>
                     <strong>📄 {info['code']} – {clean_title}</strong><br>
                     <small>⏱️ {info['days']} | 🚩 {info['route']}</small><br>
-                    {' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}
-                    <br><br>
-                    <a href='?file={filename}'><button>🔍 Preview</button></a>
-                </div>
+                    <div style='margin-top: 6px;'>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
+                    <div style='margin-top: 12px;'>
+                        <strong>Preview:</strong>
+                        <div style='font-size: 13px; white-space: pre-wrap; max-height: 180px; overflow-y: auto;'>{info['text_preview']}</div>
+                    </div>
                 """, unsafe_allow_html=True)
                 with open(file_path, "rb") as f:
                     st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_{filename}")
-
-    if selected_file:
-        info = next((i for f, i in indexed_files if f == selected_file), None)
-        if info:
-            file_path = os.path.join(PDF_DIR, selected_file)
-            st.markdown(f"""
-                <div class='modal'>
-                    <div style='display: flex; justify-content: space-between;'>
-                        <h3>📄 {info['code']} – {info['title']}</h3>
-                        <a href='/'><button style='font-size: 18px;'>❌</button></a>
-                    </div>
-                    <p><strong>Duration:</strong> {info['days']}<br><strong>Route:</strong> {info['route']}</p>
-                    <div>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
-                    <p style='margin-top:10px;'><strong>Preview:</strong></p>
-                    <pre style='font-size: 13px; white-space: pre-wrap;'>{info['text_preview']}</pre>
-            """, unsafe_allow_html=True)
-            with open(file_path, "rb") as f:
-                st.download_button("📥 Download PDF", f, file_name=selected_file, key=f"dl_modal_{selected_file}")
 else:
     st.warning("No PDF files match your search.")
