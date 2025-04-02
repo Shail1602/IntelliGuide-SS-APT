@@ -66,7 +66,7 @@ st.markdown("""
         padding: 20px;
         margin: 10px;
         transition: all 0.3s ease;
-        min-height: 320px;
+        min-height: 440px;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -78,13 +78,23 @@ st.markdown("""
     }
     .badge {
         display: inline-block;
-        background: #1f77b4;
-        color: white;
         padding: 4px 12px;
         border-radius: 20px;
         font-size: 13px;
         margin: 4px 4px 0 0;
+        color: white;
     }
+    .badge[data-tag="Land Tour"] { background: #2a9d8f; }
+    .badge[data-tag="4WD"] { background: #e76f51; }
+    .badge[data-tag="Africa"] { background: #264653; }
+    .badge[data-tag="Australia"] { background: #f4a261; }
+    .badge[data-tag="Europe"] { background: #457b9d; }
+    .badge[data-tag="River Cruise"] { background: #6a4c93; }
+    .badge[data-tag="Ocean Cruise"] { background: #1f77b4; }
+    .badge[data-tag="Asia"] { background: #ff6b6b; }
+    .badge[data-tag="South America"] { background: #43aa8b; }
+    .badge[data-tag="New Zealand"] { background: #8d99ae; }
+    .badge[data-tag="General"] { background: #888; }
     .center-btn {
         display: flex;
         justify-content: center;
@@ -92,6 +102,21 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+
+def tag_icon(tag):
+    return {
+        "Ocean Cruise": "🚣️",
+        "River Cruise": "🛶",
+        "Land Tour": "🚍",
+        "4WD": "🚙",
+        "Europe": "🇪🇺",
+        "Asia": "🌏",
+        "Australia": "🇦🇺",
+        "New Zealand": "🇿🇿",
+        "Africa": "🌍",
+        "South America": "🌎",
+        "General": "📊"
+    }.get(tag, "📌")
 
 def extract_pdf_info(file_path):
     try:
@@ -148,16 +173,20 @@ if current_files:
                     <div>
                         <strong>📄 {info['code']} – {clean_title}</strong><br>
                         <small>⏱️ {info['days']} | 🚩 {info['route']}</small><br>
-                        <div style='margin-top: 6px; display: flex; flex-wrap: wrap;'>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
+                        <div style='margin-top: 6px; display: flex; flex-wrap: wrap;'>
+                            {''.join([f"<span class='badge' data-tag='{tag}'>{tag_icon(tag)} {tag}</span>" for tag in info['tags']])}
+                        </div>
                         <div style='margin-top: 12px;'>
                             <strong>Preview:</strong>
-                            <div style='font-size: 13px; white-space: pre-wrap; max-height: 100px; overflow-y: auto;'>{info['text_preview']}</div>
+                            <div style='font-size: 13px; white-space: pre-wrap; max-height: 100px; overflow-y: auto;'>
+                                {info['text_preview']}
+                            </div>
                         </div>
                     </div>
                     <div class='center-btn'>
                 """, unsafe_allow_html=True)
                 with open(file_path, "rb") as f:
-                    st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_{filename}")
+                    st.download_button("📅 Download PDF", f, file_name=filename, key=f"dl_{filename}")
                 st.markdown("</div></div>", unsafe_allow_html=True)
 else:
     st.warning("No PDF files match your search.")
