@@ -66,7 +66,8 @@ st.markdown("""
         padding: 20px;
         margin: 10px;
         transition: all 0.3s ease;
-        max-height: 300px;
+        min-height: 420px;
+        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -83,6 +84,11 @@ st.markdown("""
         border-radius: 20px;
         font-size: 13px;
         margin: 4px 4px 0 0;
+    }
+    .center-btn {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -147,7 +153,8 @@ if current_files:
                             <strong>Preview:</strong>
                             <div style='font-size: 13px; white-space: pre-wrap; max-height: 100px; overflow-y: auto;'>{info['text_preview']}</div>
                         </div>
-                        <div style='margin-top: 12px;'>
+                    </div>
+                    <div class='center-btn'>
                 """, unsafe_allow_html=True)
                 with open(file_path, "rb") as f:
                     st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_{filename}")
