@@ -66,7 +66,7 @@ st.markdown("""
         padding: 20px;
         margin: 10px;
         transition: all 0.3s ease;
-        min-height: 430px;
+        height: 420px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -82,7 +82,7 @@ st.markdown("""
         padding: 4px 12px;
         border-radius: 20px;
         font-size: 13px;
-        margin: 4px 4px 4px 0;
+        margin: 4px 4px 0 0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -147,10 +147,10 @@ if current_files:
                             <strong>Preview:</strong>
                             <div style='font-size: 13px; white-space: pre-wrap; max-height: 100px; overflow-y: auto;'>{info['text_preview']}</div>
                         </div>
-                    </div>
+                        <div style='margin-top: 12px;'>
                 """, unsafe_allow_html=True)
                 with open(file_path, "rb") as f:
                     st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_{filename}")
-                st.markdown("</div>", unsafe_allow_html=True)
+                st.markdown("</div></div>", unsafe_allow_html=True)
 else:
     st.warning("No PDF files match your search.")
