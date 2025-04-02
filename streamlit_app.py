@@ -386,39 +386,42 @@ def add_custom_css():
             """, unsafe_allow_html=True)
 def main():
     st.markdown("""
-        <div style='
-            background: linear-gradient(to right, #e0f7fa, #ffffff);
-            padding: 25px 40px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;'>
-            <div style='display: flex; align-items: center; gap: 20px;'>
                 <div style='
-                    background-color: #7b2cbf;
-                    color: white;
-                    font-size: 36px;
-                    font-weight: bold;
-                    width: 70px;
-                    height: 70px;
-                    border-radius: 50%;
+                    background: linear-gradient(to right, #e0f7fa, #ffffff);
+                    padding: 18px 32px;
+                    border-radius: 12px;
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
                     display: flex;
                     align-items: center;
-                    justify-content: center;
-                    box-shadow: 0 0 12px rgba(123, 44, 191, 0.7);'>🌏</div>
-                <div style='text-align: left;'>
-                    <div style='font-size: 28px; font-weight: bold; color: #1f77b4;'>SS IntelliGuide</div>
-                    <div style='font-size: 15px; color: #333;'>Explore the world with confidence — your AI travel companion for APT tours & adventures.</div>
-                    <div style='font-size: 12px; color: #555; font-style: italic; margin-top: 6px;'>🧭 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong></div>
+                    justify-content: space-between;
+                    margin-bottom: 24px;'>
+                
+                    <div style='display: flex; align-items: center; gap: 18px;'>
+                        <div style='
+                            background-color: #7b2cbf;
+                            width: 58px;
+                            height: 58px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 28px;
+                            color: white;
+                            box-shadow: 0 0 10px rgba(123, 44, 191, 0.5);'>
+                            🌏
+                        </div>
+                        <div style='line-height: 1.4;'>
+                            <div style='font-size: 22px; font-weight: 700; color: #1f77b4;'>SS IntelliGuide</div>
+                            <div style='font-size: 14.5px; color: #444;'>Explore the world with confidence — your AI travel companion for APT tours & adventures.</div>
+                            <div style='font-size: 12px; color: #777; font-style: italic; margin-top: 4px;'>🧭 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong></div>
+                        </div>
+                    </div>
+                
+                    <div>
+                        <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg' alt='DB Results' style='height: 50px; border-radius: 8px; box-shadow: 0 0 6px rgba(0,0,0,0.1);'>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg' alt='DB Logo' style='height: 60px; border-radius: 6px;'>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)     
+                """, unsafe_allow_html=True)
 
     add_custom_css()
     init_service_metadata()
