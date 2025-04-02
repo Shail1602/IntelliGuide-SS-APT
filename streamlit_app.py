@@ -111,19 +111,27 @@ def query_cortex(query, columns=None, filter={}):
     columns = columns or []
     db, schema = session.get_current_database(), session.get_current_schema()
     svc = root.databases[db].schemas[schema].cortex_search_services[st.session_state.selected_cortex_search_service]
-    search_col = next(s["search_column"] for s in st.session_state.service_metadata if s["name"] == st.session_state.selected_cortex_search_service)
+    
+    search_col = next(
+        (s["search_column"] for s in st.session_state.service_metadata if s["name"] == st.session_state.selected_cortex_search_service),
+        "chunk"  # fallback
+    )
+
     all_columns = list(set(columns + [search_col, "file_url", "relative_path"]))
     results = svc.search(query, columns=all_columns, filter=filter, limit=st.session_state.num_retrieved_chunks).results
 
     def make_context(i, r):
         file = r.get("relative_path", "unknown")
-        chunk = r.get(search_col.lower(), "[Missing chunk]")
+        # Get chunk using case-insensitive lookup
+        chunk = next((v for k, v in r.items() if k.lower() == search_col.lower()), "[Missing chunk]")
         return f"Context {i+1}: {file}:\n{chunk}"
 
     context = "\n\n".join([make_context(i, r) for i, r in enumerate(results)])
 
     if st.session_state.debug:
+        st.sidebar.write("🔎 Raw Cortex Result Preview:", results[0] if results else {})
         st.sidebar.text_area("📄 Context Documents", context, height=300)
+
     return context
 
 
