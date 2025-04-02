@@ -166,7 +166,7 @@ def init_config():
         st.toggle("🐞 Debug Mode", key="debug", value=False)
         st.toggle("🕘 Use Chat History", key="use_chat_history", value=True)
         st.selectbox("📂 Filter by Topic", TOPICS, key="selected_topic")
-        st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliBot", use_container_width=True)
+        st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliGuide", use_container_width=True)
         st.caption("Ask Smart. Get Smarter.")
         
         with st.expander("🧠 Advanced Options"):
@@ -485,7 +485,7 @@ def main():
     disable_chat = not st.session_state.service_metadata
     if question := st.chat_input("💬 Ask your question...", disabled=disable_chat):
         st.session_state.messages.append({"role": "user", "content": question})
-        with st.spinner("SS IntelliBot is typing..."):
+        with st.spinner("SS IntelliGuide is typing..."):
             prompt = build_prompt(question.replace("'", ""))
             reply = complete(st.session_state.model_name, prompt)
             st.session_state.messages.append({"role": "assistant", "content": reply})
