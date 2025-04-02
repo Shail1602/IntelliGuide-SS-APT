@@ -22,16 +22,16 @@ search_query = st.text_input("🔍 Search by code, title, or location (e.g., Bro
 
 st.markdown("""
     <style>
-    .summary-card {
-        border: 1px solid #e0e0e0;
-        padding: 25px;
-        border-radius: 16px;
-        background: linear-gradient(to bottom, #ffffff, #f9fbfd);
-        margin-bottom: 24px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-        transition: transform 0.2s;
+    .card {
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        background: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
     }
-    .summary-card:hover {
+    .card:hover {
+        box-shadow: 0 4px 14px rgba(0,0,0,0.2);
         transform: scale(1.01);
     }
     .badge {
@@ -44,28 +44,8 @@ st.markdown("""
         margin-right: 6px;
         margin-top: 5px;
     }
-    .badge::before {
-        content: attr(data-icon); 
-        margin-right: 5px;
-    }
     </style>
 """, unsafe_allow_html=True)
-
-def tag_icon(tag):
-    return {
-        "Ocean Cruise": "🛳️",
-        "River Cruise": "🚢",
-        "Land Tour": "🚍",
-        "4WD": "🚙",
-        "Europe": "🇪🇺",
-        "Asia": "🌏",
-        "Australia": "🇦🇺",
-        "New Zealand": "🇳🇿",
-        "Africa": "🌍",
-        "South America": "🌎",
-        "General": "📌",
-        "Error": "⚠️"
-    }.get(tag, "📌")
 
 def extract_pdf_info(file_path):
     try:
@@ -109,40 +89,23 @@ end = start + page_size
 current_files = filtered[start:end]
 
 if current_files:
-    filenames = [f[0] for f in current_files]
-    file_labels = [f"{info['code']} - {info['title']}" for _, info in current_files]
-    selection = st.selectbox("📄 Select a PDF:", options=list(zip(filenames, file_labels)), format_func=lambda x: x[1])
-    selected_file, selected_label = selection
-    file_path = os.path.join(PDF_DIR, selected_file)
-    info = dict([f for f in current_files if f[0] == selected_file][0][1])
+    for filename, info in current_files:
+        file_path = os.path.join(PDF_DIR, filename)
+        clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
 
-    clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
-
-    st.markdown(f"""
-    <div class='summary-card'>
-      <h3 style='color: #1f3a93;'>🧭 {clean_title}</h3>
-      <ul style='font-size:15px; line-height: 1.7; list-style-type: none; padding-left: 0;'>
-        <li>📌 <strong>Code:</strong> <span style='color: green;'>{info['code']}</span></li>
-        <li>⏱️ <strong>Duration:</strong> {info['days']}</li>
-        <li>🚩 <strong>Route:</strong> {info['route']}</li>
-        <li>🏷️ <strong>Tags:</strong> {' '.join([f"<span class='badge' data-icon='{tag_icon(tag)}'>{tag}</span>" for tag in info['tags']])}</li>
-      </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
-    with open(file_path, "rb") as f:
-        st.download_button("📥 Download PDF", f, file_name=selected_file)
-
-    if st.checkbox("📄 Show Text Preview (First 3 Pages)"):
-        try:
-            with open(file_path, "rb") as f:
-                reader = PyPDF2.PdfReader(f)
-                preview_text = ""
-                for i, page in enumerate(reader.pages[:3]):
-                    preview_text += f"\n--- Page {i+1} ---\n"
-                    preview_text += page.extract_text() or "[No text]"
-                st.text_area("📘 PDF Preview", preview_text[:5000] + "\n\n...truncated", height=400)
-        except Exception as e:
-            st.error(f"❌ Could not read PDF: {e}")
+        with st.container():
+            st.markdown(f"""
+            <div class='card'>
+                <h4 style='color:#1f3a93;'>📄 {info['code']} - {clean_title}</h4>
+                <ul style='font-size:15px; list-style-type:none; padding-left: 0;'>
+                    <li>⏱️ <strong>Duration:</strong> {info['days']}</li>
+                    <li>🚩 <strong>Route:</strong> {info['route']}</li>
+                    <li>🏷️ <strong>Tags:</strong> {' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</li>
+                </ul>
+                <form action="{os.path.join(PDF_DIR, filename)}" method="get">
+                    <button type="submit" class="stButton" style="margin-top: 10px;">📥 Download PDF</button>
+                </form>
+            </div>
+            """, unsafe_allow_html=True)
 else:
     st.warning("No PDF files match your search.")
