@@ -1,4 +1,4 @@
-import streamlit as st
+fimport streamlit as st
 from snowflake.core import Root
 from snowflake.cortex import Complete
 from snowflake.snowpark.session import Session
@@ -326,16 +326,15 @@ def add_custom_css():
 
 
 def main():
-    st.markdown("""<div style='background: linear-gradient(to right, #f2f2f2, #e0f7fa); padding: 25px 40px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 20px;'>
+    st.markdown("""<div style='background: linear-gradient(to right, #dbeafe, #e0f7fa); padding: 30px 40px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;'>
     <div style='display: flex; align-items: center; gap: 20px;'>
-        <div style='background-color: #7b2cbf; color: white; font-size: 50px; font-weight: bold; width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(123, 44, 191, 0.7); animation: pulseGlow 2s infinite;'>🌍</div>
+        <div style='font-size: 48px;'>🌍</div>
         <div style='text-align: left;'>
-            <div style='font-size: 32px; font-weight: bold; color: #1f77b4;'>SS IntelliGuide</div>
-            <div style='font-size: 16px; color: #333;'>Explore the world with confidence — your AI travel companion for APT tours & adventures.</div>
-            <div style='font-size: 13px; color: #555; font-style: italic; margin-top: 8px;'>👨‍💻 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong></div>
+            <div style='font-size: 30px; font-weight: 700; color: #1f2937;'>SS IntelliGuide</div>
+            <div style='font-size: 16px; color: #374151;'>Explore the world with confidence — your AI travel companion for APT tours & adventures.</div>
+            <div style='font-size: 12px; color: #6b7280; font-style: italic; margin-top: 6px;'>🧭 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong></div>
         </div>
     </div>
-    <div>
         <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg' alt='DB Logo' style='height: 100px; border-radius: 8px;'>
         </div>
         </div>
