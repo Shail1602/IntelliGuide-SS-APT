@@ -354,7 +354,36 @@ def add_custom_css():
                 }
                 </style>
                 """, unsafe_allow_html=True)
-    
+     st.markdown("""
+                <style>
+                @keyframes pulse {
+                  0% { transform: scale(1); }
+                  50% { transform: scale(1.03); }
+                  100% { transform: scale(1); }
+                }
+                </style>
+                """, unsafe_allow_html=True)  
+    st.markdown("""
+            <style>
+            .fab {
+              position: fixed;
+              bottom: 25px;
+              right: 30px;
+              background: #1f77b4;
+              color: white;
+              padding: 14px 18px;
+              border-radius: 30px;
+              font-weight: bold;
+              box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+              z-index: 999;
+              cursor: pointer;
+              transition: background 0.3s;
+            }
+            .fab:hover {
+              background: #155a8a;
+            }
+            </style>
+            """, unsafe_allow_html=True)
 def main():
     st.markdown("""
         <div style='
@@ -412,7 +441,7 @@ def main():
               background: rgba(0, 0, 0, 0.5);
               color: white;
               padding: 40px 30px;'>
-            <h2 style='margin-bottom: 10px;'>👋 Welcome to SS IntelliGuide!</h2>
+            <h2 style='margin-bottom: 10px; animation: pulse 2s infinite;'>👋 Welcome to SS IntelliGuide!</h2>
             <p style='font-size: 16px;'>Ask any question based on our uploaded brochures:</p>
             <p style='font-size: 15px;'><strong>Brochures Available:</strong> Enchanting Japan, Vietnam & Cambodia, Ancient Kingdoms of Asia, European River Cruises, and more.</p>
             <p style='font-size: 16px; margin-top: 20px;'><strong>Try asking:</strong></p>
@@ -468,5 +497,10 @@ def main():
               SS IntelliGuide | Powered by APT Travel Brochures • Designed by Shailesh & Saumya
             </div>
             """, unsafe_allow_html=True)
+    st.markdown("""
+                <a href="#top">
+                  <div class='fab'>🔝 Back to Top</div>
+                </a>
+                """, unsafe_allow_html=True)
 if __name__ == "__main__":
     main()
