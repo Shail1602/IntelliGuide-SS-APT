@@ -352,16 +352,16 @@ def main():
     <p style='font-size: 16px;'>Ask any question based on our uploaded brochures:</p>
     <p style='font-size: 15px;'><strong>Brochures Available:</strong> Enchanting Japan, Vietnam & Cambodia, Ancient Kingdoms of Asia, European River Cruises, and more.</p>
     <p style='font-size: 16px; margin-top: 20px;'><strong>Try asking:</strong></p>
-    <ul style='list-style: none; padding-left: 0; font-size: 15px; line-height: 1.8;'>
-      <li>🌏 What Signature Experiences are included in the Vietnam & Cambodia tour?</li>
-      <li>🚂 What are the scenic highlights of the Danube River Cruise?</li>
-      <li>🗾 What cities do we visit on the Enchanting Japan tour?</li>
-      <li>🏰 Are Freedom of Choice activities available in Prague?</li>
-      <li>📅 What is the itinerary for the Ancient Kingdoms of Japan and South Korea?</li>
-    </ul>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+        <ul style='list-style: none; padding-left: 0; font-size: 15px; line-height: 1.8;'>
+          <li>🌏 What Signature Experiences are included in the Vietnam & Cambodia tour?</li>
+          <li>🚂 What are the scenic highlights of the Danube River Cruise?</li>
+          <li>🗾 What cities do we visit on the Enchanting Japan tour?</li>
+          <li>🏰 Are Freedom of Choice activities available in Prague?</li>
+          <li>📅 What is the itinerary for the Ancient Kingdoms of Japan and South Korea?</li>
+        </ul>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
     add_custom_css()
