@@ -490,8 +490,8 @@ def main():
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2: 
-    if st.button("📂 Browse PDF Brochures", use_container_width=True):
-                st.switch_page("pages/PDF Viewer.py")
+        if st.button("📂 Browse PDF Brochures", use_container_width=True):
+            st.switch_page("pages/PDF Viewer.py")
 
 
     for i, msg in enumerate(st.session_state.messages):
