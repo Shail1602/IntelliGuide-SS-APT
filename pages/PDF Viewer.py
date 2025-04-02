@@ -24,7 +24,7 @@ if st.session_state.dark_mode:
             background-color: #0e1117;
             color: #fafafa;
         }
-        .card {
+        .card, .modal {
             background-color: #1f1f1f;
             color: #fafafa;
         }
@@ -37,7 +37,7 @@ else:
             background-color: #f6f9fc;
             color: #111;
         }
-        .card {
+        .card, .modal {
             background-color: white;
             color: #111;
         }
@@ -81,6 +81,19 @@ st.markdown("""
         margin-right: 6px;
         margin-top: 5px;
     }
+    .modal {
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 80%;
+        max-height: 80vh;
+        overflow-y: auto;
+        z-index: 1000;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -110,7 +123,7 @@ def extract_pdf_info(file_path):
                 "route": route.group(0) if route else "N/A",
                 "tags": tags or ["General"],
                 "search_blob": f"{title.lower()} {route.group(0).lower() if route else ''} {tags}".lower(),
-                "text_preview": text[:2000]  # brief preview
+                "text_preview": text[:2000]
             }
     except Exception:
         return {"title": "N/A", "code": "N/A", "days": "N/A", "route": "N/A", "tags": ["Error"], "search_blob": "", "text_preview": ""}
@@ -126,6 +139,8 @@ start = (page - 1) * page_size
 end = start + page_size
 current_files = filtered[start:end]
 
+selected_details = None
+
 if current_files:
     for i in range(0, len(current_files), 3):
         row = st.columns(3)
@@ -135,17 +150,35 @@ if current_files:
                 file_path = os.path.join(PDF_DIR, filename)
                 clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
                 with row[j]:
-                    with st.container():
-                        with st.expander(f"📄 {info['code']} – {clean_title}"):
-                            st.markdown(f"""
-                                <div class='card'>
-                                    <p><strong>Duration:</strong> {info['days']}<br><strong>Route:</strong> {info['route']}</p>
-                                    <div>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
-                                    <p style='margin-top:10px;'><strong>Preview:</strong></p>
-                                    <pre style='font-size: 13px; white-space: pre-wrap;'>{info['text_preview']}</pre>
-                                </div>
-                            """, unsafe_allow_html=True)
-                            with open(file_path, "rb") as f:
-                                st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_{filename}")
+                    if st.button(f"📄 {info['code']} – {clean_title}", key=f"btn_{filename}"):
+                        st.session_state.selected_pdf = filename
+
+    if st.session_state.selected_pdf:
+        selected = next(((f, i) for f, i in current_files if f == st.session_state.selected_pdf), None)
+        if selected:
+            filename, info = selected
+            file_path = os.path.join(PDF_DIR, filename)
+            st.markdown(f"""
+                <div class='modal'>
+                    <h3>📄 {info['code']} – {info['title']}</h3>
+                    <p><strong>Duration:</strong> {info['days']}<br><strong>Route:</strong> {info['route']}</p>
+                    <div>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
+                    <p style='margin-top:10px;'><strong>Preview:</strong></p>
+                    <pre style='font-size: 13px; white-space: pre-wrap;'>{info['text_preview']}</pre>
+                    <form method="post">
+                        <button name="close" type="submit">❌ Close Preview</button>
+                    </form>
+                    <br>
+                    <form method="post">
+                        <button name="download" type="submit">📥 Download PDF</button>
+                    </form>
+                </div>
+            """, unsafe_allow_html=True)
+
+            if st.session_state.get("close"):
+                st.session_state.selected_pdf = None
+
+            with open(file_path, "rb") as f:
+                st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_modal_{filename}")
 else:
     st.warning("No PDF files match your search.")
