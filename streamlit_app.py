@@ -334,20 +334,36 @@ def add_custom_css():
                 """, unsafe_allow_html=True)
 
 def main():
-    st.markdown("""<div style='background: linear-gradient(to right, #dbeafe, #e0f7fa); padding: 30px 40px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;'>
-    <div style='display: flex; align-items: center; gap: 20px;'>
-        <div style='font-size: 48px;'>🌍</div>
-        <div style='text-align: left;'>
-            <div style='font-size: 30px; font-weight: 700; color: #1f2937;'>SS IntelliGuide</div>
-            <div style='font-size: 16px; color: #374151;'>Explore the world with confidence — your AI travel companion for APT tours & adventures.</div>
-            <div style='font-size: 12px; color: #6b7280; font-style: italic; margin-top: 6px;'>🧭 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong></div>
-        </div>
-    </div>
-        <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg' alt='DB Logo' style='height: 100px; border-radius: 8px;'>
-        </div>
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown("<hr>", unsafe_allow_html=True)
+   st.markdown("""
+                <div style='
+                    position: relative;
+                    background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1470&q=80");
+                    background-size: cover;
+                    background-position: center;
+                    border-radius: 16px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    margin-bottom: 30px;
+                '>
+                  <div style='
+                      background: rgba(0, 0, 0, 0.5);
+                      color: white;
+                      padding: 40px 30px;
+                  '>
+                    <h2 style='margin-bottom: 10px;'>👋 Welcome to SS IntelliGuide!</h2>
+                    <p style='font-size: 16px;'>Ask any question based on our uploaded brochures:</p>
+                    <p style='font-size: 15px;'><strong>Brochures Available:</strong> Enchanting Japan, Vietnam & Cambodia, Ancient Kingdoms of Asia, European River Cruises, and more.</p>
+                    <p style='font-size: 16px; margin-top: 20px;'><strong>Try asking:</strong></p>
+                    <ul style='list-style: none; padding-left: 0; font-size: 15px; line-height: 1.8;'>
+                      <li>🌏 What Signature Experiences are included in the Vietnam & Cambodia tour?</li>
+                      <li>🚂 What are the scenic highlights of the Danube River Cruise?</li>
+                      <li>🗾 What cities do we visit on the Enchanting Japan tour?</li>
+                      <li>🏰 Are Freedom of Choice activities available in Prague?</li>
+                      <li>📅 What is the itinerary for the Ancient Kingdoms of Japan and South Korea?</li>
+                    </ul>
+                  </div>
+                </div>
+                """, unsafe_allow_html=True)
 
     add_custom_css()
     init_service_metadata()
