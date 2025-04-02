@@ -376,22 +376,34 @@ def main():
     init_messages()
 
     if len(st.session_state.messages) == 0:
-        st.markdown("""<div class='hero' style='margin-top: 10px;'>
-            👋 Welcome to SS IntelliGuide! Ask any question based on our uploaded documents:
-            <br><br>
-            <b>Brochures Available:</b> Enchanting Japan, Vietnam & Cambodia, Ancient Kingdoms of Asia, European River Cruises, and more.
-            <br><br>
-            Type your question below to explore unforgettable experiences!
-            <br><br>
-            <b>Try asking:</b>
-            <ul style='list-style-type: none; padding: 0;'>
-                <li>🌏 What Signature Experiences are included in the Vietnam & Cambodia tour?</li>
-                <li>🚂 What are the scenic highlights of the Danube River Cruise?</li>
-                <li>🗾 What cities do we visit on the Enchanting Japan tour?</li>
-                <li>🏰 Are Freedom of Choice activities available in Prague?</li>
-                <li>📅 What is the itinerary for the Ancient Kingdoms of Japan and South Korea?</li>
-            </ul>
-        </div>""", unsafe_allow_html=True)
+        st.markdown("""
+            <div style='
+            position: relative;
+            background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1470&q=80");
+            background-size: cover;
+            background-position: center;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 30px;'>
+              <div style='
+              background: rgba(0, 0, 0, 0.5);
+              color: white;
+              padding: 40px 30px;'>
+            <h2 style='margin-bottom: 10px;'>👋 Welcome to SS IntelliGuide!</h2>
+            <p style='font-size: 16px;'>Ask any question based on our uploaded brochures:</p>
+            <p style='font-size: 15px;'><strong>Brochures Available:</strong> Enchanting Japan, Vietnam & Cambodia, Ancient Kingdoms of Asia, European River Cruises, and more.</p>
+            <p style='font-size: 16px; margin-top: 20px;'><strong>Try asking:</strong></p>
+                <ul style='list-style: none; padding-left: 0; font-size: 15px; line-height: 1.8;'>
+                  <li>🌏 What Signature Experiences are included in the Vietnam & Cambodia tour?</li>
+                  <li>🚂 What are the scenic highlights of the Danube River Cruise?</li>
+                  <li>🗾 What cities do we visit on the Enchanting Japan tour?</li>
+                  <li>🏰 Are Freedom of Choice activities available in Prague?</li>
+                  <li>📅 What is the itinerary for the Ancient Kingdoms of Japan and South Korea?</li>
+                </ul>
+              </div>
+            </div>
+        """, unsafe_allow_html=True) 
 
     for i, msg in enumerate(st.session_state.messages):
         css_class = "chat-left" if msg["role"] == "assistant" else "chat-right"
