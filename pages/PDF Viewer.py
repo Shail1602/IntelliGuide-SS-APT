@@ -90,8 +90,8 @@ st.markdown("""
         top: 10%;
         left: 50%;
         transform: translate(-50%, 0);
-        width: 80%;
-        max-height: 80vh;
+        width: 60%;
+        max-height: 70vh;
         overflow-y: auto;
         z-index: 1000;
         padding: 20px;
@@ -144,7 +144,7 @@ end = start + page_size
 current_files = filtered[start:end]
 
 params = st.query_params
-selected_file = params.get("file", None)
+selected_file = params.get("file", [None])[0] if params.get("file") else None
 
 if current_files:
     rows = [st.columns(3) for _ in range((len(current_files) + 2) // 3)]
@@ -163,24 +163,23 @@ if current_files:
                     <a href='?file={filename}'><button>🔍 Preview</button></a>
                 </div>
                 """, unsafe_allow_html=True)
-                if idx == 0:
-                    with open(file_path, "rb") as f:
-                        st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_first_{filename}")
+                with open(file_path, "rb") as f:
+                    st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_{filename}")
 
     if selected_file:
-        info = next((i for f, i in current_files if f == selected_file), None)
+        info = next((i for f, i in indexed_files if f == selected_file), None)
         if info:
             file_path = os.path.join(PDF_DIR, selected_file)
             st.markdown(f"""
                 <div class='modal'>
-                    <h3>📄 {info['code']} – {info['title']}</h3>
+                    <div style='display: flex; justify-content: space-between;'>
+                        <h3>📄 {info['code']} – {info['title']}</h3>
+                        <a href='/'><button style='font-size: 18px;'>❌</button></a>
+                    </div>
                     <p><strong>Duration:</strong> {info['days']}<br><strong>Route:</strong> {info['route']}</p>
                     <div>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
                     <p style='margin-top:10px;'><strong>Preview:</strong></p>
                     <pre style='font-size: 13px; white-space: pre-wrap;'>{info['text_preview']}</pre>
-                    <br>
-                    <a href='/'><button>❌ Close</button></a>
-                    <br><br>
             """, unsafe_allow_html=True)
             with open(file_path, "rb") as f:
                 st.download_button("📥 Download PDF", f, file_name=selected_file, key=f"dl_modal_{selected_file}")
