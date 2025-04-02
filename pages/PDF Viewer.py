@@ -66,7 +66,7 @@ st.markdown("""
         padding: 20px;
         margin: 10px;
         transition: all 0.3s ease;
-        height: 100%;
+        height: 500px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -82,7 +82,7 @@ st.markdown("""
         padding: 4px 12px;
         border-radius: 20px;
         font-size: 13px;
-        margin: 4px 4px 0 0;
+        margin: 4px 4px 4px 0;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -139,15 +139,18 @@ if current_files:
             with st.container():
                 st.markdown(f"""
                 <div class='card'>
-                    <strong>📄 {info['code']} – {clean_title}</strong><br>
-                    <small>⏱️ {info['days']} | 🚩 {info['route']}</small><br>
-                    <div style='margin-top: 6px;'>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
-                    <div style='margin-top: 12px;'>
-                        <strong>Preview:</strong>
-                        <div style='font-size: 13px; white-space: pre-wrap; max-height: 180px; overflow-y: auto;'>{info['text_preview']}</div>
+                    <div>
+                        <strong>📄 {info['code']} – {clean_title}</strong><br>
+                        <small>⏱️ {info['days']} | 🚩 {info['route']}</small><br>
+                        <div style='margin-top: 6px;'>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
+                        <div style='margin-top: 12px;'>
+                            <strong>Preview:</strong>
+                            <div style='font-size: 13px; white-space: pre-wrap; max-height: 140px; overflow-y: auto;'>{info['text_preview']}</div>
+                        </div>
                     </div>
                 """, unsafe_allow_html=True)
                 with open(file_path, "rb") as f:
                     st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_{filename}")
+                st.markdown("</div>", unsafe_allow_html=True)
 else:
     st.warning("No PDF files match your search.")
