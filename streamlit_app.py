@@ -323,7 +323,15 @@ def add_custom_css():
                 }
                 </style>
                 """, unsafe_allow_html=True)
-
+    st.markdown("""
+                <style>
+                    html, body, .stApp {
+                        font-family: 'Segoe UI', sans-serif;
+                        font-size: 16px;
+                        color: #111827;
+                    }
+                </style>
+                """, unsafe_allow_html=True)
 
 def main():
     st.markdown("""<div style='background: linear-gradient(to right, #dbeafe, #e0f7fa); padding: 30px 40px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;'>
