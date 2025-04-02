@@ -411,10 +411,8 @@ def main():
                         <div style='line-height: 1.4;'>
                             <div style='font-size: 22px; font-weight: 700; color: #1f77b4;'>SS IntelliGuide</div>
                             <div style='font-size: 14.5px; color: #444;'>Explore the world with confidence — your AI travel companion for APT tours & adventures.</div>
-                            <div style='font-size: 12px; color: #777; font-style: italic; margin-top: 4px;'>🧭 Crafted with expertise by <strong>Shailesh Rahul</strong> & <strong>Saumya Shruti</strong></div>
-                        </div>
+                         </div>
                     </div>
-                
                     <div>
                         <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg' alt='DB Results' style='height: 50px; border-radius: 8px; box-shadow: 0 0 6px rgba(0,0,0,0.1);'>
                     </div>
