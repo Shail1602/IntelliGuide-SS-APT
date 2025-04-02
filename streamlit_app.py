@@ -361,8 +361,7 @@ def main():
         </ul>
       </div>
     </div>
-    """, unsafe_allow_html=True)
-
+""", unsafe_allow_html=True)
 
     add_custom_css()
     init_service_metadata()
