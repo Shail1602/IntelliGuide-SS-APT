@@ -64,8 +64,12 @@ st.markdown("""
         border-radius: 14px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         padding: 20px;
-        margin-bottom: 20px;
+        margin: 10px;
         transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     .card:hover {
         box-shadow: 0 4px 14px rgba(0,0,0,0.2);
@@ -142,22 +146,29 @@ current_files = filtered[start:end]
 selected_details = None
 
 if current_files:
-    for i in range(0, len(current_files), 3):
-        row = st.columns(3)
-        for j in range(3):
-            if i + j < len(current_files):
-                filename, info = current_files[i + j]
-                file_path = os.path.join(PDF_DIR, filename)
-                clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
-                with row[j]:
-                    if st.button(f"📄 {info['code']} – {clean_title}", key=f"btn_{filename}"):
-                        st.session_state.selected_pdf = filename
+    rows = [st.columns(3) for _ in range((len(current_files) + 2) // 3)]
+    for idx, (filename, info) in enumerate(current_files):
+        file_path = os.path.join(PDF_DIR, filename)
+        clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
+        col = rows[idx // 3][idx % 3]
+        with col:
+            with st.container():
+                st.markdown(f"""
+                <div class='card'>
+                    <strong>📄 {info['code']} – {clean_title}</strong><br>
+                    <small>⏱️ {info['days']} | 🚩 {info['route']}</small><br>
+                    {' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}
+                    <form method='post'>
+                        <button name='preview' type='submit' formaction='?file={filename}'>🔍 Preview</button>
+                    </form>
+                </div>
+                """, unsafe_allow_html=True)
 
-    if st.session_state.selected_pdf:
-        selected = next(((f, i) for f, i in current_files if f == st.session_state.selected_pdf), None)
-        if selected:
-            filename, info = selected
-            file_path = os.path.join(PDF_DIR, filename)
+    selected_file = st.experimental_get_query_params().get("file", [None])[0]
+    if selected_file:
+        info = next((i for f, i in current_files if f == selected_file), None)
+        if info:
+            file_path = os.path.join(PDF_DIR, selected_file)
             st.markdown(f"""
                 <div class='modal'>
                     <h3>📄 {info['code']} – {info['title']}</h3>
@@ -165,20 +176,15 @@ if current_files:
                     <div>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
                     <p style='margin-top:10px;'><strong>Preview:</strong></p>
                     <pre style='font-size: 13px; white-space: pre-wrap;'>{info['text_preview']}</pre>
-                    <form method="post">
-                        <button name="close" type="submit">❌ Close Preview</button>
-                    </form>
                     <br>
+                    <a href='/'><button>❌ Close</button></a>
+                    <br><br>
                     <form method="post">
                         <button name="download" type="submit">📥 Download PDF</button>
                     </form>
                 </div>
             """, unsafe_allow_html=True)
-
-            if st.session_state.get("close"):
-                st.session_state.selected_pdf = None
-
             with open(file_path, "rb") as f:
-                st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_modal_{filename}")
+                st.download_button("📥 Download PDF", f, file_name=selected_file, key=f"dl_modal_{selected_file}")
 else:
     st.warning("No PDF files match your search.")
