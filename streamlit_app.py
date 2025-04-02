@@ -408,7 +408,7 @@ def add_custom_css():
     """, unsafe_allow_html=True)
 def main():
     if st.button("📂 Open PDF Viewer"):
-        st.switch_page("pages/PDF_Viewer.py")
+        st.switch_page("pages/PDF Viewer.py")
     st.markdown("""
                 <div class='header-animate' style='background: linear-gradient(to right, #e0f7fa, #ffffff);
                     padding: 25px 40px;
