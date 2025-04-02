@@ -12,6 +12,7 @@ if "dark_mode" not in st.session_state:
 if "selected_pdf" not in st.session_state:
     st.session_state.selected_pdf = None
 
+# Sidebar toggle for Dark Mode
 with st.sidebar:
     st.toggle("🌃 Dark Mode", key="dark_mode")
 
