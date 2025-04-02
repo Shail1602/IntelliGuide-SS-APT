@@ -354,7 +354,7 @@ def add_custom_css():
                 }
                 </style>
                 """, unsafe_allow_html=True)
-     st.markdown("""
+    st.markdown("""
                 <style>
                 @keyframes pulse {
                   0% { transform: scale(1); }
