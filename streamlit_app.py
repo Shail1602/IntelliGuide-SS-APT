@@ -412,7 +412,7 @@ def main():
                     padding: 25px 40px;
                     border-radius: 12px;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    margin-bottom: 20px;
+                    margin-bottom: 5px;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;'>
