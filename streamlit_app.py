@@ -388,13 +388,13 @@ def main():
     st.markdown("""
                 <div style='
                     background: linear-gradient(to right, #e0f7fa, #ffffff);
-                    padding: 18px 32px;
+                    padding: 25px 40px;
                     border-radius: 12px;
-                    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    margin-bottom: 20px;
                     display: flex;
                     align-items: center;
-                    justify-content: space-between;
-                    margin-bottom: 24px;'>
+                    justify-content: space-between;'>
                 
                     <div style='display: flex; align-items: center; gap: 18px;'>
                         <div style='
@@ -422,6 +422,7 @@ def main():
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
+
 
     add_custom_css()
     init_service_metadata()
