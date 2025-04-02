@@ -384,9 +384,31 @@ def add_custom_css():
             }
             </style>
             """, unsafe_allow_html=True)
+    st.markdown("""
+                <style>
+                @keyframes slideDown {
+                    from { opacity: 0; transform: translateY(-20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+        
+                .header-animate {
+                    animation: slideDown 0.7s ease-out;
+                }
+                </style>
+            """, unsafe_allow_html=True)
+    st.markdown("""
+        <style>
+        li:hover {
+            color: #00bcd4 !important;
+            cursor: pointer;
+            transform: scale(1.02);
+            transition: all 0.2s ease-in-out;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 def main():
     st.markdown("""
-                <div style='background: linear-gradient(to right, #e0f7fa, #ffffff);
+                <div class='header-animate' style='background: linear-gradient(to right, #e0f7fa, #ffffff);
                     padding: 25px 40px;
                     border-radius: 12px;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -403,7 +425,8 @@ def main():
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            font-size: 28px;
+                            font-size: 24px;
+                            padding: 4px;
                             color: white;
                             box-shadow: 0 0 10px rgba(123, 44, 191, 0.5);'>
                             🌏
