@@ -29,7 +29,7 @@ root = Root(session)
 
 TOPICS = ["All Topics", "Database Concepts", "AWS Framework", "Python for Beginners", "Azure", "PostgreSQL", "Kubernetes", "Pro Git", "OWASP"]
 SESSION_STATE_FILE = "session_state.json"
-STAGE_NAME = "@cortex_search_tutorial_db.public.fomc"
+STAGE_NAME = "@apt_pdf_db.public.apt"
 
 def complete(model, prompt):
     return Complete(model, prompt, session=session).replace("$", "\$")
@@ -193,13 +193,13 @@ def upload_to_snowflake_stage(uploaded_file):
     try:
         put_query = f"PUT file://{target_temp_path} {STAGE_NAME}  OVERWRITE=TRUE AUTO_COMPRESS=FALSE"
         cs.execute(put_query)
-        cs.execute("USE DATABASE cortex_search_tutorial_db")
+        cs.execute("USE DATABASE apt_pdf_db")
         cs.execute("USE SCHEMA public")
-        cs.execute(f"ALTER STAGE cortex_search_tutorial_db.public.fomc REFRESH")
+        cs.execute(f"ALTER STAGE apt_pdf_db.public.apt REFRESH")
         
         for idx, chunk in enumerate(extracted_text):
             chunk_sql = f"""
-            INSERT INTO cortex_search_tutorial_db.public.docs_chunks_table
+            INSERT INTO apt_pdf_db.public.docs_chunks_table
             SELECT
                 relative_path,
                 build_scoped_file_url({STAGE_NAME}, relative_path) AS file_url,
@@ -210,15 +210,15 @@ def upload_to_snowflake_stage(uploaded_file):
                 FROM directory({STAGE_NAME})
                 WHERE relative_path = ('{file_name}') 
             ),
-            TABLE(cortex_search_tutorial_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
+            TABLE(apt_pdf_db.public.pdf_text_chunker(build_scoped_file_url({STAGE_NAME}, relative_path))) AS func;
             """
             cs.execute(chunk_sql)
-            cs.execute("ALTER STAGE cortex_search_tutorial_db.public.fomc REFRESH")
+            cs.execute("ALTER STAGE apt_pdf_db.public.apt REFRESH")
             cs.execute("""
-            CREATE OR REPLACE CORTEX SEARCH SERVICE cortex_search_tutorial_db.public.fomc_meeting
+            CREATE OR REPLACE CORTEX SEARCH SERVICE apt_pdf_db.public.apt_pdf
                 ON chunk
                 ATTRIBUTES language
-                WAREHOUSE = cortex_search_tutorial_wh
+                WAREHOUSE = apt_pdf_wh
                 TARGET_LAG = '1 minute'
                 AS (
                     SELECT
@@ -226,7 +226,7 @@ def upload_to_snowflake_stage(uploaded_file):
                         relative_path,
                         file_url,
                         language
-                    FROM cortex_search_tutorial_db.public.docs_chunks_table
+                    FROM apt_pdf_db.public.docs_chunks_table
                 );
             """)
             st.success(f"✅ Uploaded and Reindexed the file : {file_name}")
