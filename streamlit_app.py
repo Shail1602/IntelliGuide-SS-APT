@@ -1,4 +1,4 @@
-fimport streamlit as st
+import streamlit as st
 from snowflake.core import Root
 from snowflake.cortex import Complete
 from snowflake.snowpark.session import Session
