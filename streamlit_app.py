@@ -418,17 +418,9 @@ def main():
                     justify-content: space-between;'>
                     <div style='display: flex; align-items: center; gap: 18px;'>
                         <div style='
-                            background-color: #7b2cbf;
-                            width: 58px;
-                            height: 58px;
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 24px;
-                            padding: 4px;
-                            color: white;
-                            box-shadow: 0 0 10px rgba(123, 44, 191, 0.5);'>
+                            font-size: 46px;
+                            line-height: 1;
+                            margin-right: 10px;'>
                             🌏
                         </div>
                         <div style='line-height: 1.4;'>
