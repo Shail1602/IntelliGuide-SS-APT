@@ -6,6 +6,41 @@ import re
 PDF_DIR = "pdfs"
 st.set_page_config(page_title="📚 APT Tour Brochure Library", layout="wide")
 
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = False
+
+# Sidebar toggle for Dark Mode
+with st.sidebar:
+    st.toggle("🌓 Dark Mode", key="dark_mode")
+
+# Dynamic theme based on Dark Mode
+if st.session_state.dark_mode:
+    st.markdown("""
+        <style>
+        body, .stApp {
+            background-color: #0e1117;
+            color: #fafafa;
+        }
+        .card {
+            background-color: #1f1f1f;
+            color: #fafafa;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+        <style>
+        body, .stApp {
+            background-color: #f6f9fc;
+            color: #111;
+        }
+        .card {
+            background-color: white;
+            color: #111;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
 st.markdown("""
     <div style='background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e"); 
                 background-size: cover; 
@@ -25,7 +60,6 @@ st.markdown("""
     .card {
         border-radius: 14px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        background: white;
         padding: 20px;
         margin-bottom: 20px;
         transition: all 0.3s ease;
@@ -89,23 +123,26 @@ end = start + page_size
 current_files = filtered[start:end]
 
 if current_files:
-    for filename, info in current_files:
-        file_path = os.path.join(PDF_DIR, filename)
-        clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
-
-        with st.container():
-            st.markdown(f"""
-            <div class='card'>
-                <h4 style='color:#1f3a93;'>📄 {info['code']} - {clean_title}</h4>
-                <ul style='font-size:15px; list-style-type:none; padding-left: 0;'>
-                    <li>⏱️ <strong>Duration:</strong> {info['days']}</li>
-                    <li>🚩 <strong>Route:</strong> {info['route']}</li>
-                    <li>🏷️ <strong>Tags:</strong> {' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</li>
-                </ul>
-                <form action="{os.path.join(PDF_DIR, filename)}" method="get">
-                    <button type="submit" class="stButton" style="margin-top: 10px;">📥 Download PDF</button>
-                </form>
-            </div>
-            """, unsafe_allow_html=True)
+    for i in range(0, len(current_files), 3):
+        row = st.columns(3)
+        for j in range(3):
+            if i + j < len(current_files):
+                filename, info = current_files[i + j]
+                file_path = os.path.join(PDF_DIR, filename)
+                clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
+                with row[j]:
+                    st.markdown(f"""
+                    <div class='card'>
+                        <h4 style='color:#1f3a93;'>📄 {info['code']} - {clean_title}</h4>
+                        <ul style='font-size:15px; list-style-type:none; padding-left: 0;'>
+                            <li>⏱️ <strong>Duration:</strong> {info['days']}</li>
+                            <li>🚩 <strong>Route:</strong> {info['route']}</li>
+                            <li>🏷️ <strong>Tags:</strong> {' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</li>
+                        </ul>
+                        <a href="{os.path.join(PDF_DIR, filename)}" download>
+                            <button style='margin-top: 10px;'>📥 Download PDF</button>
+                        </a>
+                    </div>
+                    """, unsafe_allow_html=True)
 else:
     st.warning("No PDF files match your search.")
