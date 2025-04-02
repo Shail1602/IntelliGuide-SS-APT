@@ -89,7 +89,7 @@ def extract_pdf_info(file_path):
         with open(file_path, "rb") as f:
             reader = PyPDF2.PdfReader(f)
             text = ""
-            for page in reader.pages[:2]:
+            for page in reader.pages[:3]:
                 text += page.extract_text() or ""
             text = re.sub(r'[^\x00-\x7F]+', ' ', text)
 
@@ -135,36 +135,17 @@ if current_files:
                 file_path = os.path.join(PDF_DIR, filename)
                 clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
                 with row[j]:
-                    if st.button(f"{info['code']} - {clean_title}", key=f"btn_{filename}"):
-                        st.session_state.selected_pdf = filename
-                    st.markdown(f"""
-                    <div class='card'>
-                        <h5 style='color:#1f3a93;'>📄 {info['code']} - {clean_title}</h5>
-                        <p><strong>Duration:</strong> {info['days']}<br><strong>Route:</strong> {info['route']}</p>
-                        <div>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-
-    if st.session_state.selected_pdf:
-        file_path = os.path.join(PDF_DIR, st.session_state.selected_pdf)
-        info = next(info for f, info in indexed_files if f == st.session_state.selected_pdf)
-        clean_title = re.sub(r'[^\x00-\x7F]+', '', info["title"])
-        st.markdown(f"""
-        <div class='card'>
-            <h4 style='color:#1f3a93;'>🧭 {clean_title}</h4>
-            <ul style='font-size:15px; list-style-type:none; padding-left: 0;'>
-                <li>📌 <strong>Code:</strong> <span style='color: green;'>{info['code']}</span></li>
-                <li>⏱️ <strong>Duration:</strong> {info['days']}</li>
-                <li>🚩 <strong>Route:</strong> {info['route']}</li>
-                <li>🏷️ <strong>Tags:</strong> {' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-
-        with open(file_path, "rb") as f:
-            st.download_button("📥 Download PDF", f, file_name=st.session_state.selected_pdf)
-
-        if st.checkbox("📄 Show Text Preview (First 2 Pages)"):
-            st.text_area("📘 PDF Preview", info["text_preview"] + "\n\n...truncated", height=400)
+                    with st.container():
+                        with st.expander(f"📄 {info['code']} – {clean_title}"):
+                            st.markdown(f"""
+                                <div class='card'>
+                                    <p><strong>Duration:</strong> {info['days']}<br><strong>Route:</strong> {info['route']}</p>
+                                    <div>{' '.join([f"<span class='badge'>{tag}</span>" for tag in info['tags']])}</div>
+                                    <p style='margin-top:10px;'><strong>Preview:</strong></p>
+                                    <pre style='font-size: 13px; white-space: pre-wrap;'>{info['text_preview']}</pre>
+                                </div>
+                            """, unsafe_allow_html=True)
+                            with open(file_path, "rb") as f:
+                                st.download_button("📥 Download PDF", f, file_name=filename, key=f"dl_{filename}")
 else:
     st.warning("No PDF files match your search.")
