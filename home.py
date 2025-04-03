@@ -488,12 +488,6 @@ def main():
             </div>
         """, unsafe_allow_html=True) 
 
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2: 
-        if st.button("📂 Browse PDF Brochures", use_container_width=True):
-            st.switch_page("pages/PDF Viewer.py")
-
-
     for i, msg in enumerate(st.session_state.messages):
         css_class = "chat-left" if msg["role"] == "assistant" else "chat-right"
         st.markdown(f"<div class='{css_class}'>{msg['content']}</div>", unsafe_allow_html=True)
@@ -529,7 +523,12 @@ def main():
 
         with st.expander("📢 Feedback"):
             st.radio("How helpful was the response?", ["👍 Excellent", "👌 Good", "👎 Needs Improvement"])
-    
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2: 
+        if st.button("📂 Browse PDF Brochures", use_container_width=True):
+            st.switch_page("pages/PDF Viewer.py")
+
     st.markdown("""
             <div style='text-align: center; font-size: 13px; color: #888; margin-top: 40px;'>
               SS IntelliGuide | Powered by APT Travel Brochures • Designed by Shailesh & Saumya
