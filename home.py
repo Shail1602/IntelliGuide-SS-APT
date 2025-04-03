@@ -534,10 +534,6 @@ def main():
               SS IntelliGuide | Powered by APT Travel Brochures • Designed by Shailesh & Saumya
             </div>
             """, unsafe_allow_html=True)
-    st.markdown("""
-                <a href="#top">
-                  <div class='fab'>🔝 Back to Top</div>
-                </a>
-                """, unsafe_allow_html=True)
+   
 if __name__ == "__main__":
     main()
