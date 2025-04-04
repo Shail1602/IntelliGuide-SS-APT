@@ -122,7 +122,7 @@ def query_cortex(query, columns=None, filter={}):
 
     def make_context(i, r):
         file = r.get("relative_path", "unknown")
-        # Get chunk using case-insensitive lookup
+      
         chunk = next((v for k, v in r.items() if k.lower() == search_col.lower()), "[Missing chunk]")
         return f"Context {i+1}: {file}:\n{chunk}"
 
