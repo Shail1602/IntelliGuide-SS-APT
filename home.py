@@ -171,7 +171,7 @@ def init_config():
         
         with st.expander("🧠 Advanced Options"):
             st.selectbox("Select Model", MODELS, key="model_name")
-            st.slider("Context Chunks", 1, 10, 5, key="num_retrieved_chunks")
+            st.slider("Context Chunks", 1, 20, 18, key="num_retrieved_chunks")
             st.slider("Chat History Messages", 1, 10, 5, key="num_chat_messages")
 
 def upload_to_snowflake_stage(uploaded_file):
