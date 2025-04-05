@@ -15,7 +15,7 @@ soup = BeautifulSoup(sitemap_content, 'xml')
 urls = [loc.text for loc in soup.find_all('loc')]
 
 # Filter for tour detail pages
-fleet_detail_pages = [url for url in urls if '/our-fleet/' in url and url.count('/') > 5]
+fleet_detail_pages = [url for url in urls if '/our-fleet/' in url and url.count('/') > 4]
 
 # Save to a file or use as needed
 with open('scraper/fleets_urls.txt', 'w') as f:
