@@ -22,4 +22,6 @@ with open('scraper/fleets_urls.txt', 'w') as f:
     for url in fleet_detail_pages:
         f.write(url + '\n')
 
+
 print(f"Extracted {len(fleet_detail_pages)} fleet detail pages.")
+
