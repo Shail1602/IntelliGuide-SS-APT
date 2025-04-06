@@ -136,10 +136,10 @@ for i in range(0, len(paged), 3):
     for j, tour in enumerate(paged[i:i+3]):
         with row[j]:
             st.markdown("<div class='tour-card'>", unsafe_allow_html=True)
-            st.markdown(f"### 📌 {tour.get('trip_name')} ({tour.get('trip_code')})", unsafe_allow_html=True)
+            st.markdown(f"### 📌 {tour.get('trip_name')} ({tour.get('trip_code', 'N/A')})", unsafe_allow_html=True)
             st.markdown("".join([
-                f"<span class='badge'>{tour.get('region')}</span>",
-                f"<span class='badge'>{tour.get('country')}</span>"
+                f"<span class='badge'>{tour.get('region', 'N/A')}</span>",
+                f"<span class='badge'>{tour.get('country', 'N/A')}</span>"
             ]), unsafe_allow_html=True)
 
             booking = tour.get("booking_url", "").strip()
