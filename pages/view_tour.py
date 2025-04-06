@@ -2,115 +2,100 @@ import streamlit as st
 import json
 import os
 
-# --- App Config ---
-st.set_page_config(layout="wide", page_title="SS IntelliGuide – Tour Editor", page_icon="🌏")
+# --- Page Setup ---
+st.set_page_config(layout="wide", page_title="SS IntelliGuide – APT Tour Cards", page_icon="🌏")
 
-# --- Custom CSS for Enhanced UI ---
+# --- Header Banner ---
 st.markdown("""
-    <style>
-    .tour-card {
-        background-color: #fff;
-        border-radius: 14px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        padding: 25px 30px;
-        margin-bottom: 30px;
-        transition: all 0.3s ease;
-        border-left: 6px solid #1f77b4;
-    }
-    .tour-card:hover {
-        box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-        transform: translateY(-4px);
-    }
-    .badge {
-        display: inline-block;
-        padding: 4px 12px;
-        background-color: #e0f2fe;
-        color: #0369a1;
-        border-radius: 16px;
-        font-size: 12px;
-        margin-right: 8px;
-    }
-    .section-title {
-        font-weight: 600;
-        font-size: 15px;
-        color: #444;
-        margin-top: 18px;
-    }
-    .stTextInput>div>div>input {
-        background-color: #f8fafc;
-    }
-    </style>
+    <div style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e'); 
+                background-size: cover; background-position: center;
+                padding: 30px; border-radius: 16px; color: white;
+                font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <h2>🌏 APT Tour Library</h2>
+        <p>Manage, search & edit luxury tours — just a click away.</p>
+    </div>
+    <br>
 """, unsafe_allow_html=True)
 
-# --- Header ---
-col1, col2 = st.columns([6, 1])
-with col1:
-    st.markdown("### 🌏 SS IntelliGuide – APT Tour Admin")
-    st.markdown("##### Manage, Search & Edit Tours – backed by AI & Travel Intelligence")
-with col2:
-    st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg", width=60)
-
-# --- Load JSON ---
+# --- Load Data ---
 json_file = "scraper/tour_info.json"
 tours = []
 if os.path.exists(json_file):
     with open(json_file, "r") as f:
         data = json.load(f)
-        if isinstance(data, list):
-            tours = data
-        elif isinstance(data, dict):
-            tours.append(data)
+        tours = data if isinstance(data, list) else [data]
 
-# --- Search ---
-search_term = st.text_input("🔍 Search by trip name, code, region, or country").lower()
+# --- Search Box ---
+search_term = st.text_input("🔍 Search by code, name, region, or country").strip().lower()
+
 filtered_tours = [
-    tour for tour in tours 
-    if search_term in tour.get("trip_name", "").lower()
-    or search_term in tour.get("trip_code", "").lower()
-    or search_term in tour.get("region", "").lower()
-    or search_term in tour.get("country", "").lower()
+    t for t in tours
+    if search_term in t.get("trip_name", "").lower()
+    or search_term in t.get("trip_code", "").lower()
+    or search_term in t.get("region", "").lower()
+    or search_term in t.get("country", "").lower()
 ]
 
-# --- Tour Display ---
-for tour in filtered_tours:
-    st.markdown("<div class='tour-card'>", unsafe_allow_html=True)
-    st.markdown(f"### 🔖 {tour.get('trip_name', 'Untitled')} ({tour.get('trip_code', 'N/A')})", unsafe_allow_html=True)
-    
-    # Badges for Region and Country
-    badges = f"""
-        <span class="badge">{tour.get('region', '')}</span>
-        <span class="badge">{tour.get('country', '')}</span>
-    """
-    st.markdown(badges, unsafe_allow_html=True)
+# --- Style for Cards ---
+st.markdown("""
+    <style>
+    .card {
+        background-color: #fff;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+    }
+    .badge {
+        display: inline-block;
+        background: #e0f7fa;
+        color: #00796b;
+        padding: 4px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        margin-right: 6px;
+    }
+    .label {
+        font-weight: 600;
+        margin-right: 6px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-    # URLs
-    st.markdown(f"🔗 **Original**: [{tour.get('original_url', '')}]({tour.get('original_url', '')})")
-    if tour.get('booking_url'):
-        st.markdown(f"🔗 **Booking**: [{tour.get('booking_url')}]({tour.get('booking_url')})")
-
-    # Inclusions
-    if tour.get("trip_inclusions"):
-        st.markdown("<div class='section-title'>📋 Key Inclusions:</div>", unsafe_allow_html=True)
-        st.markdown("\n".join([f"- {item}" for item in tour.get("trip_inclusions", [])]))
-
-    # Inputs
-    st.markdown("<div class='section-title'>📅 Tour Details:</div>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col1:
-        tour["start_date"] = st.text_input("📅 Start Date", value=tour.get("start_date", ""), key=f"start_{tour['trip_code']}")
-    with col2:
-        tour["end_date"] = st.text_input("📅 End Date", value=tour.get("end_date", ""), key=f"end_{tour['trip_code']}")
-    with col3:
-        tour["price_aud"] = st.text_input("💰 Price (AUD)", value=tour.get("price_aud", ""), key=f"price_{tour['trip_code']}")
-
-    tour["limited_availability"] = st.checkbox("🔴 Limited Availability", value=tour.get("limited_availability", False), key=f"limit_{tour['trip_code']}")
-
-    if st.button("💾 Save Changes", key=f"save_{tour['trip_code']}"):
-        with open(json_file, "w") as f:
-            json.dump(tours, f, indent=2)
-        st.success("✅ Tour info updated!")
-
-    st.markdown("</div>", unsafe_allow_html=True)
+# --- Display Cards ---
+cols = st.columns(2)
+for idx, tour in enumerate(filtered_tours):
+    with cols[idx % 2]:
+        st.markdown(f"""
+        <div class="card">
+            <h4>📌 {tour.get("trip_name", "")} <span style='color: #666;'>({tour.get("trip_code", "")})</span></h4>
+            <div>
+                <span class="badge">{tour.get("region", "").capitalize()}</span>
+                <span class="badge">{tour.get("country", "").capitalize()}</span>
+            </div>
+            <p style="margin-top:10px;">
+                <span class="label">🌐 Original:</span> 
+                <a href="{tour.get("original_url", "")}" target="_blank">{tour.get("original_url", "")}</a><br>
+                <span class="label">🛒 Booking:</span> 
+                <a href="{tour.get("booking_url", "")}" target="_blank">{tour.get("booking_url", "")}</a>
+            </p>
+            <p><strong>📋 Key Inclusions:</strong></p>
+            <ul style="font-size: 14px;">
+                {''.join([f"<li>{inc}</li>" for inc in tour.get("trip_inclusions", []) if inc.lower() != "title"])}
+            </ul>
+            <div style="margin-top:10px;">
+                <span class="label">📅 Start Date:</span> {tour.get("start_date", "")}<br>
+                <span class="label">📅 End Date:</span> {tour.get("end_date", "")}<br>
+                <span class="label">💰 Price:</span> {tour.get("price_aud", "")}<br>
+                {"<span class='badge' style='background:#ffebee; color:#c62828;'>Limited Availability</span>" if tour.get("limited_availability") else ""}
+            </div>
+            <br>
+            <form method='post'>
+                <input type='submit' value='💾 Save Changes (UI Only)' style='padding:6px 12px; font-weight:600; background:#1976d2; color:white; border:none; border-radius:6px;'/>
+            </form>
+        </div>
+        """, unsafe_allow_html=True)
 
 # --- Footer ---
 st.markdown("""
