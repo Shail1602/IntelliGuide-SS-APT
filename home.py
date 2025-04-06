@@ -188,7 +188,7 @@ def init_config():
         st.toggle("🐞 Debug Mode", key="debug", value=False)
         st.toggle("🕘 Use Chat History", key="use_chat_history", value=True)
         st.selectbox("📂 Filter by Topic", TOPICS, key="selected_topic")
-        st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliGuide", use_container_width=True)
+        #st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/SS%20Intellibot.png", caption="SS IntelliGuide", use_container_width=True)
         st.caption("Ask Smart. Get Smarter.")
         
         with st.expander("🧠 Advanced Options"):
