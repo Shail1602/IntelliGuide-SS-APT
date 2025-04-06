@@ -12,16 +12,10 @@ if "edit_mode" not in st.session_state:
 
 def apply_styles():
     mode = "dark" if st.session_state.dark_mode else "light"
-    background = "#111" if mode == "dark" else "#fff"
-    text = "#f1f1f1" if mode == "dark" else "#111"
-    card_bg = "#1e1e2f" if mode == "dark" else "#ffffff"
-    border_color = "#333" if mode == "dark" else "#e5e7eb"
-    input_bg = "#2c2c3c" if mode == "dark" else "#f8fafc"
-    input_text = "#fff" if mode == "dark" else "#111"
-    badge_bg = "#264653" if mode == "dark" else "#e0f2fe"
-    badge_text = "#90e0ef" if mode == "dark" else "#0369a1"
-    highlight_bg = "#014f86" if mode == "dark" else "#d1fae5"
-    highlight_text = "#fff" if mode == "dark" else "#065f46"
+    background = "#111" if mode == "dark" else "#f9f9f9"
+    text = "#fafafa" if mode == "dark" else "#111"
+    card_bg = "#1c1c1c" if mode == "dark" else "#ffffff"
+    border_color = "#444" if mode == "dark" else "#e0e0e0"
 
     st.markdown(f"""
         <style>
@@ -31,62 +25,44 @@ def apply_styles():
         }}
         .tour-card {{
             background-color: {card_bg};
-            border-radius: 14px;
             border: 1px solid {border_color};
-            padding: 24px;
-            margin-bottom: 30px;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-            animation: fadeIn 0.8s ease-in-out;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s ease-in-out;
+            font-size: 13px;
         }}
         .tour-card:hover {{
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }}
-        input[type="text"], textarea, .stTextInput > div > div > input {{
-            background-color: {input_bg} !important;
-            color: {input_text} !important;
-            border: 1px solid #444 !important;
-        }}
-        .stCheckbox > div {{
-            color: {text};
-        }}
-        .stNumberInput label, .stTextInput label {{
-            color: {text};
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
         }}
         .badge {{
-            display: inline-block;
-            background-color: {badge_bg};
-            color: {badge_text};
-            border-radius: 9999px;
-            font-size: 12px;
-            padding: 4px 12px;
-            margin: 2px 5px 2px 0;
+            font-size: 11px;
+            padding: 3px 10px;
+            margin: 2px 4px 2px 0;
         }}
         .highlight {{
-            background-color: {highlight_bg};
-            color: {highlight_text};
+            font-size: 11px;
+            padding: 4px 8px;
+            margin: 4px 4px 4px 0;
+        }}
+        input[type="text"], .stTextInput > div > input {{
             font-size: 12px;
-            padding: 5px 10px;
-            border-radius: 999px;
-            margin: 4px 5px 4px 0;
-            display: inline-block;
+            padding: 6px;
         }}
         .stButton button {{
-            background: linear-gradient(90deg, #00b4d8, #0077b6);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 6px 14px;
-            font-weight: 600;
+            padding: 6px 12px;
+            font-size: 12px;
         }}
-        .stButton button:hover {{
-            background: linear-gradient(90deg, #0096c7, #005f73);
+        .stCheckbox > label {{
+            font-size: 12px;
         }}
-        @keyframes fadeIn {{
-            0% {{ opacity: 0; transform: translateY(20px); }}
-            100% {{ opacity: 1; transform: translateY(0); }}
+        h3, h4 {{
+            font-size: 16px !important;
         }}
         </style>
     """, unsafe_allow_html=True)
+
 
 
 apply_styles()
