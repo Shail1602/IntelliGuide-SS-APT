@@ -3,10 +3,10 @@ import json
 import os
 import math
 
-# Page config
+# --- Page config ---
 st.set_page_config(page_title="SS IntelliGuide – Tour Editor", layout="wide", page_icon="🌏")
 
-# Custom CSS
+# --- CSS Styling ---
 st.markdown("""
     <style>
     .header-banner {
@@ -16,9 +16,6 @@ st.markdown("""
         margin-bottom: 30px;
         color: white;
         box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    }
-    .header-banner h3 {
-        margin: 0 0 10px 0;
     }
     .tour-card {
         background-color: #ffffff;
@@ -32,12 +29,6 @@ st.markdown("""
     }
     .tour-card:hover {
         box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-    }
-    .tour-inner {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 480px;
     }
     .badge {
         display: inline-block;
@@ -63,7 +54,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Header Banner
+# --- Header Banner ---
 st.markdown("""
     <div class="header-banner">
         <h3>🌏 SS IntelliGuide – APT Tour Admin</h3>
@@ -71,7 +62,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Load tour data
+# --- Load JSON ---
 json_file = "scraper/tour_info.json"
 tours = []
 if os.path.exists(json_file):
@@ -79,15 +70,15 @@ if os.path.exists(json_file):
         data = json.load(f)
         tours = data if isinstance(data, list) else [data]
 
-# Search & Pagination Controls
-col1, col2 = st.columns([4, 1])
-with col1:
+# --- Search & Pagination Controls ---
+col_search, col_page = st.columns([4, 1])
+with col_search:
     search_term = st.text_input("🔍 Search by name, code, region, or country").lower()
-with col2:
+with col_page:
     total_pages = math.ceil(len(tours) / 15)
     page = st.number_input("📄 Page", min_value=1, max_value=max(1, total_pages), step=1)
 
-# Filtered + Paginated
+# --- Filter and paginate ---
 filtered = [
     t for t in tours if search_term in t.get("trip_name", "").lower()
     or search_term in t.get("trip_code", "").lower()
@@ -98,7 +89,7 @@ start_index = (page - 1) * 15
 end_index = start_index + 15
 paged = filtered[start_index:end_index]
 
-# Extract Highlights from inclusion list
+# --- Highlight extraction ---
 def get_highlights(inclusions):
     tags = []
     if not inclusions:
@@ -107,47 +98,52 @@ def get_highlights(inclusions):
     for inc in inclusions:
         for word in keywords:
             if word in inc.lower():
-                tags.append(inc[:50] + "..." if len(inc) > 50 else inc)
+                tags.append(inc[:60] + "..." if len(inc) > 60 else inc)
                 break
     return tags[:4]
 
-# Display 3 tours per row
+# --- Show 3 cards per row ---
 for i in range(0, len(paged), 3):
     row = st.columns(3)
     for j, tour in enumerate(paged[i:i+3]):
         with row[j]:
-            st.markdown("<div class='tour-card'><div class='tour-inner'>", unsafe_allow_html=True)
+            st.markdown("<div class='tour-card'>", unsafe_allow_html=True)
             st.markdown(f"### 📌 {tour.get('trip_name', 'Untitled')} ({tour.get('trip_code', 'N/A')})", unsafe_allow_html=True)
 
-            region = tour.get("region", "")
-            country = tour.get("country", "")
-            st.markdown("" +
-                (f"<span class='badge'>{region}</span>" if region else "") +
-                (f"<span class='badge'>{country}</span>" if country else ""), unsafe_allow_html=True)
+            # Region/Country
+            badges = ""
+            if tour.get("region"):
+                badges += f"<span class='badge'>{tour['region']}</span>"
+            if tour.get("country"):
+                badges += f"<span class='badge'>{tour['country']}</span>"
+            st.markdown(badges, unsafe_allow_html=True)
 
+            # Links
             st.markdown(f"🔗 <b>Original:</b> [{tour.get('original_url')}]({tour.get('original_url')})", unsafe_allow_html=True)
             if tour.get("booking_url"):
                 st.markdown(f"🔗 <b>Booking:</b> [{tour.get('booking_url')}]({tour.get('booking_url')})", unsafe_allow_html=True)
 
+            # Highlights
             highlights = get_highlights(tour.get("trip_inclusions", []))
             if highlights:
                 st.markdown("🌟 <b>Highlights:</b>", unsafe_allow_html=True)
                 st.markdown("".join([f"<span class='highlight'>{h}</span>" for h in highlights]), unsafe_allow_html=True)
 
-            st.markdown("📁 <b>Tour Details</b>", unsafe_allow_html=True)
+            # Editable fields
+            st.markdown("📁 **Tour Details**")
             tour["start_date"] = st.text_input("Start Date", value=tour.get("start_date", ""), key=f"start_{tour['trip_code']}")
             tour["end_date"] = st.text_input("End Date", value=tour.get("end_date", ""), key=f"end_{tour['trip_code']}")
             tour["price_aud"] = st.text_input("Price (AUD)", value=tour.get("price_aud", ""), key=f"price_{tour['trip_code']}")
             tour["limited_availability"] = st.checkbox("🔴 Limited Availability", value=tour.get("limited_availability", False), key=f"limit_{tour['trip_code']}")
 
-            if st.button("📂 Save Changes", key=f"save_{tour['trip_code']}"):
+            if st.button("💾 Save Changes", key=f"save_{tour['trip_code']}"):
                 with open(json_file, "w") as f:
                     json.dump(tours, f, indent=2)
                 st.success("✅ Tour info updated!")
 
-            st.markdown("</div></div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-# Footer
+# --- Footer ---
 st.markdown("""---  
 <div style='text-align: center; font-size: 13px; color: #999;'>SS IntelliGuide • Designed by Shailesh & Saumya</div>
 """, unsafe_allow_html=True)
