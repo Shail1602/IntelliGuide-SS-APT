@@ -36,6 +36,9 @@ APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
+model_path = "local_model"
+model = SentenceTransformer(model_path)
+
 # embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 # faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
 
@@ -57,9 +60,21 @@ TOPICS = ["All Locations", "Europe", "Australia", "New-Zealand", "Asia", "Africa
 SESSION_STATE_FILE = "session_state.json"
 STAGE_NAME = "@apt_pdf_db.public.apt"
 
+@st.cache_resource
+def get_local_llm(model_id="mistralai/Mistral-7B-Instruct-v0.2"):
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32)
+    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
+    return pipe
+
+llm_pipe = get_local_llm()
+
+
 def complete(model, prompt):
     #return "This is a mocked LLM response for: " + prompt
-    return Complete(model, prompt, session=session).replace("$", "\$")
+    #return Complete(model, prompt, session=session).replace("$", "\$")
+    response = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)[0]["generated_text"]
+    return response.split("[/INST]")[-1].strip() 
 
 
 def save_session_state():
