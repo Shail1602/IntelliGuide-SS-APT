@@ -1,107 +1,131 @@
 import streamlit as st
 import json
 import os
+import re
 
-# --- Page Config ---
-st.set_page_config(layout="wide", page_title="SS IntelliGuide – Tour Cards", page_icon="🌏")
+# --- App Config ---
+st.set_page_config(layout="wide", page_title="SS IntelliGuide – Tour Editor", page_icon="🌏")
 
 # --- CSS Styling ---
 st.markdown("""
-<style>
-.tour-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    margin-bottom: 25px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.badge {
-    display: inline-block;
-    background: #e0f2fe;
-    color: #0369a1;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    margin-right: 6px;
-}
-.tour-title {
-    font-size: 17px;
-    font-weight: bold;
-    margin-bottom: 4px;
-}
-.trip-row {
-    display: flex;
-    gap: 20px;
-}
-</style>
+    <style>
+    .banner {
+        background: linear-gradient(to right, #0ea5e9, #38bdf8);
+        color: white;
+        padding: 25px 40px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+    .tour-card {
+        background-color: #fff;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        padding: 20px 24px;
+        margin-bottom: 25px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        background-color: #e0f2fe;
+        color: #0369a1;
+        border-radius: 12px;
+        font-size: 11px;
+        margin: 2px 6px 6px 0;
+    }
+    .section-title {
+        font-weight: 600;
+        font-size: 13px;
+        color: #444;
+        margin-top: 12px;
+        margin-bottom: 4px;
+    }
+    .stTextInput>div>div>input {
+        background-color: #f8fafc;
+    }
+    </style>
 """, unsafe_allow_html=True)
 
-# --- Load Data ---
+# --- Banner Header ---
+st.markdown("""
+    <div class="banner">
+        <h2>🌏 SS IntelliGuide – Tour Editor</h2>
+        <p style='margin:0;'>Manage, Search & Edit Luxury Tours – backed by AI & Travel Intelligence</p>
+    </div>
+""", unsafe_allow_html=True)
+
+# --- Load Tour JSON ---
 json_file = "scraper/tour_info.json"
 tours = []
 if os.path.exists(json_file):
     with open(json_file, "r") as f:
         data = json.load(f)
-        if isinstance(data, list):
-            tours = data
-        elif isinstance(data, dict):
-            tours.append(data)
+        tours = data if isinstance(data, list) else [data]
 
-# --- Search ---
+# --- Search Bar ---
 search_term = st.text_input("🔍 Search by trip name, code, region, or country").lower()
 filtered_tours = [
-    tour for tour in tours 
+    tour for tour in tours
     if search_term in tour.get("trip_name", "").lower()
     or search_term in tour.get("trip_code", "").lower()
     or search_term in tour.get("region", "").lower()
     or search_term in tour.get("country", "").lower()
 ]
 
-# --- Render Tours in 3 Columns ---
-for i in range(0, len(filtered_tours), 3):
+# --- Keywords for Tags ---
+tag_keywords = ["luxury", "cruise", "meals", "drinks", "excursion", "transfer", "accommodation", "flight", "dining"]
+
+# --- Display in 3 columns layout ---
+rows = [filtered_tours[i:i+3] for i in range(0, len(filtered_tours), 3)]
+for row in rows:
     cols = st.columns(3)
-    for j, col in enumerate(cols):
-        if i + j < len(filtered_tours):
-            tour = filtered_tours[i + j]
-            with col:
-                st.markdown("<div class='tour-card'>", unsafe_allow_html=True)
-                st.markdown(f"<div class='tour-title'>📌 {tour.get('trip_name', '')} ({tour.get('trip_code', '')})</div>", unsafe_allow_html=True)
-                st.markdown(
-                    f"<span class='badge'>{tour.get('region', '')}</span>"
-                    f"<span class='badge'>{tour.get('country', '')}</span>",
-                    unsafe_allow_html=True
-                )
-                st.markdown(f"🔗 <b>Original:</b> <a href='{tour.get('original_url', '')}' target='_blank'>{tour.get('original_url', '')}</a>", unsafe_allow_html=True)
-                if tour.get("booking_url"):
-                    st.markdown(f"🔗 <b>Booking:</b> <a href='{tour.get('booking_url', '')}' target='_blank'>{tour.get('booking_url', '')}</a>", unsafe_allow_html=True)
-                
-                # Inclusions
-                if tour.get("trip_inclusions"):
-                    st.markdown("**📋 Inclusions:**")
-                    for item in tour.get("trip_inclusions", []):
-                        st.markdown(f"- {item}")
+    for tour, col in zip(row, cols):
+        with col:
+            st.markdown("<div class='tour-card'>", unsafe_allow_html=True)
+            st.markdown(f"### 🔖 {tour.get('trip_name')} ({tour.get('trip_code')})", unsafe_allow_html=True)
 
-                # Inputs for Start, End, Price
-                start_col, end_col, price_col = st.columns(3)
-                with start_col:
-                    tour["start_date"] = st.text_input("Start Date", value=tour.get("start_date", ""), key=f"start_{tour['trip_code']}")
-                with end_col:
-                    tour["end_date"] = st.text_input("End Date", value=tour.get("end_date", ""), key=f"end_{tour['trip_code']}")
-                with price_col:
-                    tour["price_aud"] = st.text_input("Price (AUD)", value=tour.get("price_aud", ""), key=f"price_{tour['trip_code']}")
+            # Badges
+            region = tour.get("region", "")
+            country = tour.get("country", "")
+            inclusion_text = " ".join(tour.get("trip_inclusions", []))
+            tags = [word for word in tag_keywords if re.search(rf"\\b{word}\\b", inclusion_text, re.IGNORECASE)]
+            badges_html = "".join([f"<span class='badge'>{b}</span>" for b in [region, country] + tags])
+            st.markdown(badges_html, unsafe_allow_html=True)
 
-                tour["limited_availability"] = st.checkbox("🔴 Limited Availability", value=tour.get("limited_availability", False), key=f"limit_{tour['trip_code']}")
+            # URLs
+            if tour.get("original_url"):
+                st.markdown(f"🔗 **Original**: [{tour['original_url']}]({tour['original_url']})")
+            if tour.get("booking_url"):
+                st.markdown(f"🔗 **Booking**: [{tour['booking_url']}]({tour['booking_url']})")
 
-                if st.button("💾 Save Changes", key=f"save_{tour['trip_code']}"):
-                    with open(json_file, "w") as f:
-                        json.dump(tours, f, indent=2)
-                    st.success("✅ Tour updated!")
-                st.markdown("</div>", unsafe_allow_html=True)
+            # Key Inclusions – Hidden to keep concise
+            # st.markdown("<div class='section-title'>📋 Inclusions</div>", unsafe_allow_html=True)
+            # st.markdown("\n".join([f"- {i}" for i in tour.get("trip_inclusions", [])]))
+
+            # Editable Fields
+            st.markdown("<div class='section-title'>📅 Tour Details</div>", unsafe_allow_html=True)
+            d1, d2, d3 = st.columns(3)
+            with d1:
+                tour["start_date"] = st.text_input("Start Date", tour.get("start_date", ""), key=f"start_{tour['trip_code']}")
+            with d2:
+                tour["end_date"] = st.text_input("End Date", tour.get("end_date", ""), key=f"end_{tour['trip_code']}")
+            with d3:
+                tour["price_aud"] = st.text_input("Price (AUD)", tour.get("price_aud", ""), key=f"price_{tour['trip_code']}")
+
+            # Checkbox + Save Button
+            tour["limited_availability"] = st.checkbox("🔴 Limited Availability", tour.get("limited_availability", False), key=f"limit_{tour['trip_code']}")
+            if st.button("💾 Save Changes", key=f"save_{tour['trip_code']}"):
+                with open(json_file, "w") as f:
+                    json.dump(tours, f, indent=2)
+                st.success("✅ Tour updated!")
+
+            st.markdown("</div>", unsafe_allow_html=True)
 
 # --- Footer ---
-st.markdown("<hr style='margin-top: 40px;'>", unsafe_allow_html=True)
-st.markdown("<div style='text-align: center; font-size: 13px; color: #aaa;'>SS IntelliGuide • Built by Shailesh & Saumya</div>", unsafe_allow_html=True)
+st.markdown("""
+    <hr style="margin-top: 30px;">
+    <div style='text-align: center; font-size: 13px; color: #999;'>SS IntelliGuide • Designed by Shailesh & Saumya</div>
+""", unsafe_allow_html=True)
