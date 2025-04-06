@@ -15,6 +15,15 @@ APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
+from sentence_transformers import SentenceTransformer
+
+embedding_model = HuggingFaceEmbeddings(
+    model_name="local_model",  # folder you downloaded
+    model_kwargs={"local_files_only": True}
+)
+
+faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
+
 # embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 # faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
 
