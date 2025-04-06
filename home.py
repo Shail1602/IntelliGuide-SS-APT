@@ -13,6 +13,8 @@ from langchain.embeddings.base import Embeddings
 from sentence_transformers import SentenceTransformer
 from langchain.schema import Document
 import pdfplumber
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 
 class LocalSentenceEmbeddings(Embeddings):
     def __init__(self, model_path="local_model"):
@@ -291,6 +293,43 @@ def upload_to_snowflake_stage(uploaded_file):
     finally:
         cs.close()
         conn.close()
+
+def upload_to_faiss_vectorstore(uploaded_file):
+    # Save uploaded file temporarily
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        tmp.write(uploaded_file.read())
+        tmp_path = tmp.name
+
+    file_name = uploaded_file.name.replace(" ", "_")
+    folder_path = "pdfs"
+    os.makedirs(folder_path, exist_ok=True)
+    final_path = os.path.join(folder_path, file_name)
+    shutil.copy(tmp_path, final_path)
+
+    try:
+        with pdfplumber.open(tmp_path) as pdf:
+            full_text = "\n".join(page.extract_text() or "" for page in pdf.pages)
+
+        splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=300)
+        chunks = splitter.split_text(full_text)
+        metadatas = [{"source": f"{folder_path}/{file_name}"}] * len(chunks)
+
+        # Load existing FAISS DB
+        try:
+            db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
+            db.add_texts(chunks, metadatas)
+        except Exception:
+            db = FAISS.from_texts(chunks, embedding_model, metadatas=metadatas)
+
+        db.save_local("embeddings")
+        st.success(f"✅ Uploaded and indexed to FAISS: {file_name}")
+
+        os.remove(tmp_path)
+        if "uploaded_pdf" in st.session_state:
+            del st.session_state["uploaded_pdf"]
+
+    except Exception as e:
+        st.error(f"Failed to process and index PDF: {e}")
 
 def handle_uploaded_pdf():
     uploaded_file = st.sidebar.file_uploader("📥 Upload PDF", type=["pdf"], key="pdf_uploader")
