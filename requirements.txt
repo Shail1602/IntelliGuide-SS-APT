@@ -15,3 +15,4 @@ sentence-transformers
 numpy
 langchain
 langchain-community
+transformers==4.31.0
