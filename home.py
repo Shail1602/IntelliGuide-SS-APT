@@ -28,7 +28,8 @@ class LocalSentenceEmbeddings(Embeddings):
         return self.model.encode(text, convert_to_numpy=True).tolist()
 
 # Load FAISS DB using local embeddings
-embedding_model = LocalSentenceEmbeddings(model_path="local_model")
+model_path = "local_model"
+embedding_model = LocalSentenceEmbeddings(model_path)
 faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
 
 
@@ -36,7 +37,7 @@ APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
-model_path = "local_model"
+
 model = SentenceTransformer(model_path)
 
 # embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
