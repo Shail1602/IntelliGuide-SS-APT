@@ -41,7 +41,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-
 # --- Load JSON Data ---
 json_file = "scraper/tour_info.json"
 tours = []
