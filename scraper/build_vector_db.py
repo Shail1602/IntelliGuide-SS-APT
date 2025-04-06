@@ -10,7 +10,7 @@ PDF_FOLDERS = ["pdfs", "Fleet_pdfs"]
 JSON_FILE = "scraper/tour_info.json"
 EMBED_DB = "embeddings"
 
-# Initialize embedding and chunking
+# Embedding and chunking
 embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=300)
 
@@ -29,28 +29,43 @@ for folder in PDF_FOLDERS:
                 metadatas = [{"source": f"{folder}/{filename}"}] * len(chunks)
                 all_chunks.extend(zip(chunks, metadatas))
 
-# ✅ Process JSON file (tour_info.json)
+# ✅ Process tour_info.json fully
 if os.path.exists(JSON_FILE):
     with open(JSON_FILE, "r") as f:
         data = json.load(f)
         if isinstance(data, dict):
-            data = [data]  # wrap in list if only one record
+            data = [data]
 
         for tour in data:
-            text_parts = []
-            for key in ["trip_name", "trip_code", "region", "country", "description"]:
-                if tour.get(key):
-                    text_parts.append(f"{key.title().replace('_', ' ')}: {tour[key]}")
-            inclusions = tour.get("trip_inclusions", [])
-            if inclusions:
-                text_parts.append("Trip Inclusions:\n" + "\n".join(inclusions))
+            booking = tour.get("booking_url", "").strip()
+            start = tour.get("start_date", "").strip()
+            end = tour.get("end_date", "").strip()
+            price = tour.get("price", "Not Available")
 
-            text = "\n".join(text_parts)
-            chunks = splitter.split_text(text)
+            text_parts = []
+
+            # Include all fields
+            for key, value in tour.items():
+                # Turn lists (like trip_inclusions) into newline-separated strings
+                if isinstance(value, list):
+                    value = "\n".join(value)
+                if value:
+                    text_parts.append(f"{key.title().replace('_', ' ')}: {value}")
+
+            # Add conditional notices
+            if not booking:
+                text_parts.append("Notice: 📩 Request a quote by visiting the tour page.")
+            elif not start or not end:
+                text_parts.append("Notice: ℹ️ Latest tour info is sold out or not available.")
+            else:
+                text_parts.append(f"✅ Tour available from {start} to {end} at price: {price}")
+
+            full_text = "\n".join(text_parts)
+            chunks = splitter.split_text(full_text)
             metadatas = [{"source": "tour_info.json", "trip_name": tour.get("trip_name", "")}] * len(chunks)
             all_chunks.extend(zip(chunks, metadatas))
 
-# ✅ Save to FAISS
+# ✅ Save FAISS DB
 if all_chunks:
     texts, metadatas = zip(*all_chunks)
     db = FAISS.from_texts(texts, embedding, metadatas=metadatas)
