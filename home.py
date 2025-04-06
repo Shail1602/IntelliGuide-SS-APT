@@ -19,7 +19,7 @@ import torch
 
 class LocalSentenceEmbeddings(Embeddings):
     def __init__(self, model_path="local_model"):
-        self.model = SentenceTransformer(model_path)
+        self.model = SentenceTransformer(model_path, trust_remote_code=True)
 
     def embed_documents(self, texts):
         return self.model.encode(texts, convert_to_numpy=True).tolist()

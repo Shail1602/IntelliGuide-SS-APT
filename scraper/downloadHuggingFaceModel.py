@@ -1,5 +1,6 @@
 from transformers import AutoModel, AutoTokenizer
 import shutil
+from sentence_transformers import SentenceTransformer
 
 model_name = "sentence-transformers/all-MiniLM-L6-v2"
 target_dir = "local_model"
