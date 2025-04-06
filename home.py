@@ -12,7 +12,7 @@ from langchain_community.vectorstores import FAISS
 from langchain.embeddings.base import Embeddings
 from sentence_transformers import SentenceTransformer
 from langchain.schema import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+import pdfplumber
 
 class LocalSentenceEmbeddings(Embeddings):
     def __init__(self, model_path="local_model"):
