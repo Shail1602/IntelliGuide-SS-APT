@@ -75,16 +75,38 @@ def get_local_llm(model_id="local_models/mistral7b"):
 
 tokenizer, llm_pipe  = get_local_llm()
 
+def auto_summarize(prompt, max_words=512):
+    words = prompt.split()
+    if len(words) <= max_words:
+        return prompt  # no need to summarize
 
-def complete(model, prompt):
-    #return "This is a mocked LLM response for: " + prompt
-    #return Complete(model, prompt, session=session).replace("$", "\$")
+    summary_prompt = f"""
+    [INST]
+    Please summarize the following content to under {max_words} words while retaining key details and structure:
     
-    max_input_tokens = 512
-    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=max_input_tokens)
-    decoded_prompt = tokenizer.decode(inputs["input_ids"][0], skip_special_tokens=True)
-    response = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)[0]["generated_text"]
-    return response.split("[/INST]")[-1].strip() 
+    {prompt}
+    [/INST]
+    """
+    try:
+        result = llm_pipe(summary_prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
+        return result[0]["generated_text"].split("[/INST]")[-1].strip()
+    except Exception:
+        return " ".join(words[:max_words]) + "\n\n[Auto-trimmed due to summarization failure]"
+
+
+def complete(model_name, prompt):
+    try:
+        summarized_prompt = auto_summarize(prompt)
+        result = llm_pipe(summarized_prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
+
+        if not result:
+            return "⚠️ No response generated. Please try rephrasing."
+
+        return result[0]["generated_text"].split("[/INST]")[-1].strip()
+
+    except Exception as e:
+        return f"❌ Error generating response: {e}"
+
 
 
 def save_session_state():
