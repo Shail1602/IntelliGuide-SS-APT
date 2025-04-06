@@ -1,5 +1,6 @@
-streamlit==1.31.1
-snowflake-ml-python==1.8.1
+streamlit
+snowflake==1.0.4
+snowflake-ml-python==1.7.4
 snowflake-snowpark-python
 snowflake-connector-python
 pandas
@@ -11,7 +12,6 @@ PyPDF2
 pdfplumber
 faiss-cpu
 sentence-transformers
-torch==2.1.2
+numpy
 langchain
 langchain-community
-transformers==4.31.0
