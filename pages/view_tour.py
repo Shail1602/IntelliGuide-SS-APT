@@ -53,10 +53,10 @@ search_term = st.text_input("🔎 Search by trip name, code, region, or country"
 # --- Filter Tours ---
 filtered_tours = [
     tour for tour in tours
-    if search_term in tour["trip_name"].lower()
-    or search_term in tour["trip_code"].lower()
-    or search_term in tour["region"].lower()
-    or search_term in tour["country"].lower()
+    if search_term in tour.get("trip_name", "").lower() \
+    or search_term in tour.get("trip_code", "").lower() \
+    or search_term in tour.get("region", "").lower() \
+    or search_term in tour.get("country", "").lower():
 ]
 
 # --- Tour Cards ---
