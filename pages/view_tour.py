@@ -6,43 +6,14 @@ import os
 st.set_page_config(layout="wide", page_title="SS IntelliGuide – Tour Editor", page_icon="🌏")
 
 # --- Business Header Banner ---
-st.markdown(
-    """
-    <div style='background: linear-gradient(to right, #e0f7fa, #ffffff);
-        padding: 25px 40px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        margin-top: 0px;
-        margin-bottom: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;'>
+col1, col2 = st.columns([6, 1])
 
-        <div style='display: flex; align-items: center; gap: 18px;'>
-            <div style='
-                font-size: 46px;
-                line-height: 1;
-                margin-right: 10px;'>🌏
-            </div>
-            <div style='line-height: 1.4;'>
-                <div style='font-size: 22px; font-weight: 700; color: #1f77b4;'>
-                    SS IntelliGuide – APT Tour Admin
-                </div>
-                <div style='font-size: 14.5px; color: #444;'>
-                    Manage, Search & Edit Tours – backed by AI & Travel Intelligence
-                </div>
-            </div>
-        </div>
+with col1:
+    st.markdown("### 🌏 SS IntelliGuide – APT Tour Admin")
+    st.markdown("##### Manage, Search & Edit Tours – backed by AI & Travel Intelligence")
 
-        <div>
-            <img src='https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg'
-                 alt='DB Results'
-                 style='height: 50px; border-radius: 8px; box-shadow: 0 0 6px rgba(0,0,0,0.1);'>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+with col2:
+    st.image("https://raw.githubusercontent.com/Shail1602/Inellibot/main/dbr.jpg", width=60)
 
 # --- Load JSON Data ---
 json_file = "scraper/tour_info.json"
