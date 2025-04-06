@@ -28,7 +28,7 @@ class LocalSentenceEmbeddings(Embeddings):
         return self.model.encode(text, convert_to_numpy=True).tolist()
 
 # Load FAISS DB using local embeddings
-tokenizer = AutoTokenizer.from_pretrained("sshleifer/tiny-gpt2")
+
 model_path = "local_model"
 embedding_model = LocalSentenceEmbeddings(model_path)
 faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
@@ -79,6 +79,9 @@ llm_pipe = get_local_llm()
 def complete(model, prompt):
     #return "This is a mocked LLM response for: " + prompt
     #return Complete(model, prompt, session=session).replace("$", "\$")
+    max_input_tokens = 512
+    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=max_input_tokens)
+    decoded_prompt = tokenizer.decode(inputs["input_ids"][0], skip_special_tokens=True)
     response = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)[0]["generated_text"]
     return response.split("[/INST]")[-1].strip() 
 
