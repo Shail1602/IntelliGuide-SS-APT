@@ -8,8 +8,8 @@ import os
 import shutil
 import tempfile
 import fitz
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
