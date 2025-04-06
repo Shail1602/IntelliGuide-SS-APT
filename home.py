@@ -28,6 +28,7 @@ class LocalSentenceEmbeddings(Embeddings):
         return self.model.encode(text, convert_to_numpy=True).tolist()
 
 # Load FAISS DB using local embeddings
+tokenizer = AutoTokenizer.from_pretrained("sshleifer/tiny-gpt2")
 model_path = "local_model"
 embedding_model = LocalSentenceEmbeddings(model_path)
 faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
