@@ -2,22 +2,77 @@ import streamlit as st
 import json
 import os
 
-# --- Page Setup ---
-st.set_page_config(layout="wide", page_title="SS IntelliGuide – APT Tour Cards", page_icon="🌏")
+# --- Setup ---
+st.set_page_config(layout="wide", page_title="APT Tour Library", page_icon="🌍")
 
-# --- Header Banner ---
+# --- Banner Header ---
 st.markdown("""
-    <div style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e'); 
-                background-size: cover; background-position: center;
-                padding: 30px; border-radius: 16px; color: white;
-                font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-        <h2>🌏 APT Tour Library</h2>
+    <style>
+        .banner {
+            background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') no-repeat center center;
+            background-size: cover;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: white;
+        }
+        .banner h1 {
+            margin: 0;
+            font-size: 34px;
+            font-weight: 700;
+        }
+        .banner p {
+            margin: 5px 0 0;
+            font-size: 16px;
+            font-weight: 300;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .badge {
+            display: inline-block;
+            font-size: 12px;
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 4px 10px;
+            border-radius: 50px;
+            margin-right: 6px;
+        }
+        .label {
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 15px 0;
+        }
+        .save-btn {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        ul li {
+            margin-bottom: 4px;
+        }
+    </style>
+    <div class='banner'>
+        <h1>🌍 APT Tour Library</h1>
         <p>Manage, search & edit luxury tours — just a click away.</p>
     </div>
     <br>
 """, unsafe_allow_html=True)
 
-# --- Load Data ---
+# --- Load Tour Data ---
 json_file = "scraper/tour_info.json"
 tours = []
 if os.path.exists(json_file):
@@ -25,8 +80,8 @@ if os.path.exists(json_file):
         data = json.load(f)
         tours = data if isinstance(data, list) else [data]
 
-# --- Search Box ---
-search_term = st.text_input("🔍 Search by code, name, region, or country").strip().lower()
+# --- Search Bar ---
+search_term = st.text_input("🔎 Search by name, region, or country").strip().lower()
 
 filtered_tours = [
     t for t in tours
@@ -36,71 +91,51 @@ filtered_tours = [
     or search_term in t.get("country", "").lower()
 ]
 
-# --- Style for Cards ---
-st.markdown("""
-    <style>
-    .card {
-        background-color: #fff;
-        border: 1px solid #eee;
-        border-radius: 14px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.05);
-    }
-    .badge {
-        display: inline-block;
-        background: #e0f7fa;
-        color: #00796b;
-        padding: 4px 10px;
-        border-radius: 10px;
-        font-size: 12px;
-        margin-right: 6px;
-    }
-    .label {
-        font-weight: 600;
-        margin-right: 6px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# --- Display Cards ---
+# --- Two-Column Card Layout ---
 cols = st.columns(2)
 for idx, tour in enumerate(filtered_tours):
     with cols[idx % 2]:
         st.markdown(f"""
         <div class="card">
-            <h4>📌 {tour.get("trip_name", "")} <span style='color: #666;'>({tour.get("trip_code", "")})</span></h4>
+            <h4>📌 {tour.get("trip_name", "")} <span style='color:#999;'>({tour.get("trip_code", "")})</span></h4>
             <div>
                 <span class="badge">{tour.get("region", "").capitalize()}</span>
                 <span class="badge">{tour.get("country", "").capitalize()}</span>
             </div>
-            <p style="margin-top:10px;">
-                <span class="label">🌐 Original:</span> 
-                <a href="{tour.get("original_url", "")}" target="_blank">{tour.get("original_url", "")}</a><br>
-                <span class="label">🛒 Booking:</span> 
-                <a href="{tour.get("booking_url", "")}" target="_blank">{tour.get("booking_url", "")}</a>
-            </p>
-            <p><strong>📋 Key Inclusions:</strong></p>
-            <ul style="font-size: 14px;">
-                {''.join([f"<li>{inc}</li>" for inc in tour.get("trip_inclusions", []) if inc.lower() != "title"])}
+
+            <div class="divider"></div>
+
+            <div class="label">🌐 Original:</div>
+            <a href="{tour.get("original_url", "#")}" target="_blank">{tour.get("original_url", "")}</a>
+
+            <div class="label">🛒 Booking:</div>
+            <a href="{tour.get("booking_url", "#")}" target="_blank">{tour.get("booking_url", "")}</a>
+
+            <div class="divider"></div>
+
+            <div class="label">📋 Key Inclusions:</div>
+            <ul>
+                {''.join(f"<li>{item}</li>" for item in tour.get("trip_inclusions", []) if item.lower() != "title")}
             </ul>
-            <div style="margin-top:10px;">
-                <span class="label">📅 Start Date:</span> {tour.get("start_date", "")}<br>
-                <span class="label">📅 End Date:</span> {tour.get("end_date", "")}<br>
-                <span class="label">💰 Price:</span> {tour.get("price_aud", "")}<br>
-                {"<span class='badge' style='background:#ffebee; color:#c62828;'>Limited Availability</span>" if tour.get("limited_availability") else ""}
-            </div>
-            <br>
-            <form method='post'>
-                <input type='submit' value='💾 Save Changes (UI Only)' style='padding:6px 12px; font-weight:600; background:#1976d2; color:white; border:none; border-radius:6px;'/>
+
+            <div class="divider"></div>
+
+            <div class="label">📅 Start Date:</div> {tour.get("start_date", "N/A")}
+            <div class="label">📅 End Date:</div> {tour.get("end_date", "N/A")}
+            <div class="label">💰 Price:</div> {tour.get("price_aud", "N/A")}
+            {'<div class="label" style="color:#c62828;">🔴 Limited Availability</div>' if tour.get("limited_availability") else ''}
+
+            <form method="post">
+                <input class="save-btn" type="submit" value="💾 Save Changes (UI Only)" />
             </form>
         </div>
         """, unsafe_allow_html=True)
 
 # --- Footer ---
 st.markdown("""
+    <br>
     <hr style="margin-top: 30px; margin-bottom: 10px;">
-    <div style='text-align: center; font-size: 13px; color: #888; margin-top: 10px;'>
+    <div style='text-align: center; font-size: 13px; color: #888;'>
       SS IntelliGuide • Designed by Shailesh & Saumya
     </div>
 """, unsafe_allow_html=True)
