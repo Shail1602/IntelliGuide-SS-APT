@@ -21,47 +21,23 @@ st.markdown("""
         margin: 0 0 10px 0;
     }
     .tour-card {
-        background-color: #f1f9ff;
+        background-color: #ffffff;
         border-radius: 14px;
-        border: 1px solid #dbeafe;
+        border: 1px solid #e5e7eb;
         padding: 24px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        margin-bottom: 20px;
-        transition: 0.2s ease-in-out;
-    }
-    .tour-card:hover {
-        box-shadow: 0 6px 14px rgba(0,0,0,0.07);
-    }
-    .badge {
-        display: inline-block;
-        background-color: #e0f2fe;
-        color: #0369a1;
-        border-radius: 9999px;
-        font-size: 12px;
-        padding: 4px 10px;
-        margin: 2px 6px 2px 0;
-    }
-    .highlight {
-        background-color: #d1fae5;
-        color: #065f46;
-        font-size: 12px;
-        padding: 5px 10px;
-        border-radius: 999px;
-        margin: 4px 5px 0 0;
-        display: inline-block;
-    }
-    .tour-card {
-    background-color: #ffffff;
-    border-radius: 14px;
-    border: 1px solid #e5e7eb;
-    padding: 24px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-    transition: all 0.25s ease-in-out;
-    height: 100%;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        transition: all 0.25s ease-in-out;
+        height: 100%;
     }
     .tour-card:hover {
         box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    }
+    .tour-inner {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 480px;
     }
     .badge {
         display: inline-block;
@@ -140,41 +116,36 @@ for i in range(0, len(paged), 3):
     row = st.columns(3)
     for j, tour in enumerate(paged[i:i+3]):
         with row[j]:
-            st.markdown("<div class='tour-card'>", unsafe_allow_html=True)
+            st.markdown("<div class='tour-card'><div class='tour-inner'>", unsafe_allow_html=True)
             st.markdown(f"### 📌 {tour.get('trip_name', 'Untitled')} ({tour.get('trip_code', 'N/A')})", unsafe_allow_html=True)
 
-            # Region + Country badges
             region = tour.get("region", "")
             country = tour.get("country", "")
-            st.markdown("".join([
-                f"<span class='badge'>{region}</span>" if region else "",
-                f"<span class='badge'>{country}</span>" if country else ""
-            ]), unsafe_allow_html=True)
+            st.markdown("" +
+                (f"<span class='badge'>{region}</span>" if region else "") +
+                (f"<span class='badge'>{country}</span>" if country else ""), unsafe_allow_html=True)
 
-            # URLs
             st.markdown(f"🔗 <b>Original:</b> [{tour.get('original_url')}]({tour.get('original_url')})", unsafe_allow_html=True)
             if tour.get("booking_url"):
                 st.markdown(f"🔗 <b>Booking:</b> [{tour.get('booking_url')}]({tour.get('booking_url')})", unsafe_allow_html=True)
 
-            # Highlights
             highlights = get_highlights(tour.get("trip_inclusions", []))
             if highlights:
                 st.markdown("🌟 <b>Highlights:</b>", unsafe_allow_html=True)
                 st.markdown("".join([f"<span class='highlight'>{h}</span>" for h in highlights]), unsafe_allow_html=True)
 
-            # Editable Inputs
-            st.markdown("📁 **Tour Details**")
+            st.markdown("📁 <b>Tour Details</b>", unsafe_allow_html=True)
             tour["start_date"] = st.text_input("Start Date", value=tour.get("start_date", ""), key=f"start_{tour['trip_code']}")
             tour["end_date"] = st.text_input("End Date", value=tour.get("end_date", ""), key=f"end_{tour['trip_code']}")
             tour["price_aud"] = st.text_input("Price (AUD)", value=tour.get("price_aud", ""), key=f"price_{tour['trip_code']}")
             tour["limited_availability"] = st.checkbox("🔴 Limited Availability", value=tour.get("limited_availability", False), key=f"limit_{tour['trip_code']}")
 
-            if st.button("💾 Save Changes", key=f"save_{tour['trip_code']}"):
+            if st.button("📂 Save Changes", key=f"save_{tour['trip_code']}"):
                 with open(json_file, "w") as f:
                     json.dump(tours, f, indent=2)
                 st.success("✅ Tour info updated!")
 
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("</div></div>", unsafe_allow_html=True)
 
 # Footer
 st.markdown("""---  
