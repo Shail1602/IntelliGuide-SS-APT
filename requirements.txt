@@ -13,3 +13,4 @@ pdfplumber
 faiss-cpu
 sentence-transformers
 numpy
+langchain
