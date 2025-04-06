@@ -14,7 +14,8 @@ from sentence_transformers import SentenceTransformer
 from langchain.schema import Document
 import pdfplumber
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
+from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+import torch
 
 class LocalSentenceEmbeddings(Embeddings):
     def __init__(self, model_path="local_model"):
