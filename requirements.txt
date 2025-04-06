@@ -12,8 +12,8 @@ PyPDF2
 pdfplumber
 faiss-cpu
 sentence-transformers==2.5.1
-torch==2.2.2
-transformers==4.39.1
+torch==2.1.2
+transformers==4.35.2
 numpy
 langchain
 langchain-community
