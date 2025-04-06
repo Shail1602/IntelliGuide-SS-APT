@@ -145,7 +145,7 @@ for i in range(0, len(paged), 3):
             if not booking:
                 st.warning("📩 Request a quote by visiting the tour page.")
             elif missing_details:
-                st.info("ℹ️ Latest tour info is currently not available.")
+                st.info("ℹ️ Latest tour info is sold out or not available.")
 
             st.markdown(f"🔗 [Original Page]({tour.get('original_url')})", unsafe_allow_html=True)
             if booking:
