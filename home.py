@@ -157,6 +157,19 @@ def query_cortex(query, columns=None, filter={}):
 
     return context
 
+def query_faiss(query: str) -> str:
+    docs: list[Document] = faiss_db.similarity_search(query, k=st.session_state.num_retrieved_chunks)
+
+    context = ""
+    for i, doc in enumerate(docs):
+        file = doc.metadata.get("relative_path", "unknown")
+        chunk = doc.page_content
+        context += f"Context {i+1}: {file}:\n{chunk}\n\n"
+
+    if st.session_state.debug:
+        st.sidebar.text_area("📄 FAISS Context Preview", context, height=300)
+
+    return context
 
 def apply_theme():
     if st.session_state.get("dark_mode"):
@@ -184,6 +197,7 @@ def init_config():
         st.toggle("🌓 Dark Mode", key="dark_mode", value=False)
         apply_theme()
         st.title("⚙️ Configuration")
+        st.radio("🔍 Use Search From", ["FAISS", "Cortex"], key="search_backend", horizontal=True)
         st.selectbox("Cortex Search Service", [s["name"] for s in st.session_state.service_metadata], key="selected_cortex_search_service")
         st.button("🧹 Clear Chat", key="clear_conversation")
         st.toggle("🐞 Debug Mode", key="debug", value=False)
