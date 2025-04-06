@@ -16,3 +16,4 @@ transformers==4.39.1
 numpy
 langchain
 langchain-community
+snowflake==1.0.4
