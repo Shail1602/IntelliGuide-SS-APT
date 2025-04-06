@@ -70,15 +70,16 @@ def get_local_llm(model_id="local_models/mistral7b"):
         torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
     )
     pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
-    return pipe
+    return tokenizer, pipe
 
 
-llm_pipe = get_local_llm()
+tokenizer, llm_pipe  = get_local_llm()
 
 
 def complete(model, prompt):
     #return "This is a mocked LLM response for: " + prompt
     #return Complete(model, prompt, session=session).replace("$", "\$")
+    
     max_input_tokens = 512
     inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=max_input_tokens)
     decoded_prompt = tokenizer.decode(inputs["input_ids"][0], skip_special_tokens=True)
