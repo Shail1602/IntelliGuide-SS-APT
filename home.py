@@ -10,9 +10,9 @@ import tempfile
 import fitz
 from langchain_community.vectorstores import FAISS
 from langchain.embeddings.base import Embeddings
-from transformers.utils import safe_open
 from transformers.modeling_utils import no_init_weights, init_empty_weights
 from sentence_transformers import SentenceTransformer
+from langchain.embeddings.base import Embeddings
 
 class LocalSentenceEmbeddings(Embeddings):
     def __init__(self, model_path="local_model"):
