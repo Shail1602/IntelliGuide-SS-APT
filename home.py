@@ -62,10 +62,19 @@ SESSION_STATE_FILE = "session_state.json"
 STAGE_NAME = "@apt_pdf_db.public.apt"
 
 @st.cache_resource
-def get_local_llm(model_id="local_models/mistral7b"):
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32)
-    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
+def get_local_llm():
+    model_path = "local_models/mistral7b"
+    tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)  # safer for local GPT-2 variants
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path,
+        torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
+    )
+    pipe = pipeline(
+        "text-generation",
+        model=model,
+        tokenizer=tokenizer,
+        device=0 if torch.cuda.is_available() else -1
+    )
     return pipe
 
 llm_pipe = get_local_llm()
