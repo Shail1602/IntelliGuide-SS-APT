@@ -2,8 +2,45 @@ import streamlit as st
 import json
 import os
 
-# --- App Config & Branding ---
-st.set_page_config(layout="wide", page_title="SS IntelliGuide – Tour Admin", page_icon="🌏")
+# --- App Config ---
+st.set_page_config(layout="wide", page_title="SS IntelliGuide – Tour Editor", page_icon="🌏")
+
+# --- Custom CSS for Enhanced UI ---
+st.markdown("""
+    <style>
+    .tour-card {
+        background-color: #fff;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        padding: 25px 30px;
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+        border-left: 6px solid #1f77b4;
+    }
+    .tour-card:hover {
+        box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+        transform: translateY(-4px);
+    }
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        background-color: #e0f2fe;
+        color: #0369a1;
+        border-radius: 16px;
+        font-size: 12px;
+        margin-right: 8px;
+    }
+    .section-title {
+        font-weight: 600;
+        font-size: 15px;
+        color: #444;
+        margin-top: 18px;
+    }
+    .stTextInput>div>div>input {
+        background-color: #f8fafc;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # --- Header ---
 col1, col2 = st.columns([6, 1])
@@ -19,91 +56,56 @@ tours = []
 if os.path.exists(json_file):
     with open(json_file, "r") as f:
         data = json.load(f)
-        tours = data if isinstance(data, list) else [data]
+        if isinstance(data, list):
+            tours = data
+        elif isinstance(data, dict):
+            tours.append(data)
 
 # --- Search ---
-search_term = st.text_input("🔎 Search by trip name, code, region, or country").lower()
+search_term = st.text_input("🔍 Search by trip name, code, region, or country").lower()
 filtered_tours = [
-    t for t in tours if any(search_term in str(t.get(k, "")).lower() for k in ["trip_name", "trip_code", "region", "country"])
+    tour for tour in tours 
+    if search_term in tour.get("trip_name", "").lower()
+    or search_term in tour.get("trip_code", "").lower()
+    or search_term in tour.get("region", "").lower()
+    or search_term in tour.get("country", "").lower()
 ]
 
-# --- Style ---
-st.markdown("""
-    <style>
-        .tour-card {
-            background-color: #f9fbfd;
-            border: 1px solid #e1e8ed;
-            border-radius: 12px;
-            padding: 25px 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .tour-card:hover {
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        }
-        .field-label {
-            font-weight: 600;
-            margin-top: 15px;
-            font-size: 15px;
-        }
-        .save-button {
-            background-color: #1f77b4 !important;
-            color: white !important;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-        .tag {
-            display: inline-block;
-            background: #e0f7fa;
-            color: #007c91;
-            font-size: 12px;
-            font-weight: 500;
-            padding: 2px 8px;
-            border-radius: 6px;
-            margin-right: 6px;
-        }
-    </style>
-""", unsafe_allow_html=True)
+# --- Tour Display ---
+for tour in filtered_tours:
+    st.markdown("<div class='tour-card'>", unsafe_allow_html=True)
+    st.markdown(f"### 🔖 {tour.get('trip_name', 'Untitled')} ({tour.get('trip_code', 'N/A')})", unsafe_allow_html=True)
+    
+    # Badges for Region and Country
+    badges = f"""
+        <span class="badge">{tour.get('region', '')}</span>
+        <span class="badge">{tour.get('country', '')}</span>
+    """
+    st.markdown(badges, unsafe_allow_html=True)
 
-# --- Display Cards ---
-for i, tour in enumerate(filtered_tours):
-    st.markdown('<div class="tour-card">', unsafe_allow_html=True)
-
-    # Top info
-    st.markdown(f"### 📌 {tour.get('trip_name', 'Untitled')} ({tour.get('trip_code', 'N/A')})")
-    st.markdown(
-        f"<span class='tag'>🌍 {tour.get('region', 'Unknown')}</span>"
-        f"<span class='tag'>📍 {tour.get('country', 'Unknown')}</span>", unsafe_allow_html=True
-    )
-
-    st.markdown(f"🔗 **Original**: [{tour.get('original_url')}]({tour.get('original_url')})")
-    if tour.get("booking_url"):
+    # URLs
+    st.markdown(f"🔗 **Original**: [{tour.get('original_url', '')}]({tour.get('original_url', '')})")
+    if tour.get('booking_url'):
         st.markdown(f"🔗 **Booking**: [{tour.get('booking_url')}]({tour.get('booking_url')})")
 
     # Inclusions
     if tour.get("trip_inclusions"):
-        st.markdown("**📋 Key Inclusions:**")
-        st.markdown("<ul style='margin-top: -10px;'>", unsafe_allow_html=True)
-        for inc in tour["trip_inclusions"][:5]:
-            st.markdown(f"<li>{inc}</li>", unsafe_allow_html=True)
-        st.markdown("</ul>", unsafe_allow_html=True)
+        st.markdown("<div class='section-title'>📋 Key Inclusions:</div>", unsafe_allow_html=True)
+        st.markdown("\n".join([f"- {item}" for item in tour.get("trip_inclusions", [])]))
 
-    # Editable Inputs
-    col1, col2, col3 = st.columns(3)
+    # Inputs
+    st.markdown("<div class='section-title'>📅 Tour Details:</div>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 1, 1])
     with col1:
-        st.markdown("**📅 Start Date**", unsafe_allow_html=True)
-        tour["start_date"] = st.text_input("", value=tour.get("start_date", ""), key=f"start_{i}")
+        tour["start_date"] = st.text_input("📅 Start Date", value=tour.get("start_date", ""), key=f"start_{tour['trip_code']}")
     with col2:
-        st.markdown("**📅 End Date**", unsafe_allow_html=True)
-        tour["end_date"] = st.text_input("", value=tour.get("end_date", ""), key=f"end_{i}")
+        tour["end_date"] = st.text_input("📅 End Date", value=tour.get("end_date", ""), key=f"end_{tour['trip_code']}")
     with col3:
-        st.markdown("**💰 Price (AUD)**", unsafe_allow_html=True)
-        tour["price_aud"] = st.text_input("", value=tour.get("price_aud", ""), key=f"price_{i}")
+        tour["price_aud"] = st.text_input("💰 Price (AUD)", value=tour.get("price_aud", ""), key=f"price_{tour['trip_code']}")
 
-    tour["limited_availability"] = st.checkbox("🔴 Limited Availability", value=tour.get("limited_availability", False), key=f"limit_{i}")
+    tour["limited_availability"] = st.checkbox("🔴 Limited Availability", value=tour.get("limited_availability", False), key=f"limit_{tour['trip_code']}")
 
-    # Save Button
-    if st.button("💾 Save Changes", key=f"save_{i}"):
+    if st.button("💾 Save Changes", key=f"save_{tour['trip_code']}"):
         with open(json_file, "w") as f:
             json.dump(tours, f, indent=2)
         st.success("✅ Tour info updated!")
@@ -112,6 +114,8 @@ for i, tour in enumerate(filtered_tours):
 
 # --- Footer ---
 st.markdown("""
-    <hr style="margin-top: 30px;">
-    <div style='text-align: center; font-size: 13px; color: #888;'>SS IntelliGuide • Designed by Shailesh & Saumya</div>
+    <hr style="margin-top: 30px; margin-bottom: 10px;">
+    <div style='text-align: center; font-size: 13px; color: #888; margin-top: 10px;'>
+      SS IntelliGuide • Designed by Shailesh & Saumya
+    </div>
 """, unsafe_allow_html=True)
