@@ -11,7 +11,7 @@ import fitz
 from langchain_community.vectorstores import FAISS
 from langchain.embeddings.base import Embeddings
 from sentence_transformers import SentenceTransformer
-from langchain.embeddings.base import Embeddings
+
 
 class LocalSentenceEmbeddings(Embeddings):
     def __init__(self, model_path="local_model"):

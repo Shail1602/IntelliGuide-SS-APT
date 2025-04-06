@@ -12,7 +12,7 @@ PyPDF2
 pdfplumber
 faiss-cpu
 sentence-transformers
-numpy
+torch==2.1.2
 langchain
 langchain-community
 transformers==4.31.0
