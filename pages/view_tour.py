@@ -52,16 +52,16 @@ search_term = st.text_input("🔎 Search by trip name, code, region, or country"
 
 # --- Filter Tours ---
 filtered_tours = [
-    tour for tour in tours
+    tour for tour in tours 
     if search_term in tour.get("trip_name", "").lower() \
     or search_term in tour.get("trip_code", "").lower() \
     or search_term in tour.get("region", "").lower() \
-    or search_term in tour.get("country", "").lower():
+    or search_term in tour.get("country", "").lower()
 ]
 
 # --- Tour Cards ---
 for tour in filtered_tours:
-    with st.expander(f"📌 {tour['trip_name']} ({tour['trip_code']})", expanded=False):
+    with st.expander(f"📌 {tour.get('trip_name', 'Untitled')} ({tour.get('trip_code', 'N/A')})", expanded=False):
         left, right = st.columns([2, 1])
 
         with left:
@@ -75,12 +75,12 @@ for tour in filtered_tours:
                 st.markdown("\n".join([f"- {item}" for item in tour.get("trip_inclusions", [])]))
 
         with right:
-            tour["start_date"] = st.text_input("📅 Start Date", value=tour.get("start_date", ""), key=f"start_{tour['trip_code']}")
-            tour["end_date"] = st.text_input("📅 End Date", value=tour.get("end_date", ""), key=f"end_{tour['trip_code']}")
-            tour["price_aud"] = st.text_input("💰 Price (AUD)", value=tour.get("price_aud", ""), key=f"price_{tour['trip_code']}")
-            tour["limited_availability"] = st.checkbox("🔴 Limited Availability", value=tour.get("limited_availability", False), key=f"limit_{tour['trip_code']}")
+            tour["start_date"] = st.text_input("📅 Start Date", value=tour.get("start_date", ""), key=f"start_{tour.get('trip_code', '')}")
+            tour["end_date"] = st.text_input("📅 End Date", value=tour.get("end_date", ""), key=f"end_{tour.get('trip_code', '')}")
+            tour["price_aud"] = st.text_input("💰 Price (AUD)", value=tour.get("price_aud", ""), key=f"price_{tour.get('trip_code', '')}")
+            tour["limited_availability"] = st.checkbox("🔴 Limited Availability", value=tour.get("limited_availability", False), key=f"limit_{tour.get('trip_code', '')}")
 
-        if st.button("💾 Save Changes", key=f"save_{tour['trip_code']}"):
+        if st.button("💾 Save Changes", key=f"save_{tour.get('trip_code', '')}"):
             with open(json_file, "w") as f:
                 json.dump(tours, f, indent=2)
             st.success("✅ Tour info updated!")
