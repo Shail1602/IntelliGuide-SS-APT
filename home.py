@@ -8,10 +8,9 @@ import os
 import shutil
 import tempfile
 import fitz
-from sentence_transformers import SentenceTransformer
 from langchain_community.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.embeddings.base import Embeddings
+from sentence_transformers import SentenceTransformer
 
 class LocalSentenceEmbeddings(Embeddings):
     def __init__(self, model_path="local_model"):
@@ -23,16 +22,14 @@ class LocalSentenceEmbeddings(Embeddings):
     def embed_query(self, text):
         return self.model.encode(text, convert_to_numpy=True).tolist()
 
-
-APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
-st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
-MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
-
+# Load FAISS DB using local embeddings
 embedding_model = LocalSentenceEmbeddings(model_path="local_model")
 faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
 
 
-faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
+APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
+st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
+MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
 # embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 # faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
