@@ -2,10 +2,14 @@ streamlit
 snowflake==1.0.4
 snowflake-ml-python==1.7.4
 snowflake-snowpark-python
-PyMuPDF
-pandas
 snowflake-connector-python
+pandas
 python-dotenv
 requests
 beautifulsoup4
+PyMuPDF
 PyPDF2
+pdfplumber
+faiss-cpu
+sentence-transformers
+numpy
