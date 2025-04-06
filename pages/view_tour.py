@@ -50,6 +50,40 @@ st.markdown("""
         margin: 4px 5px 0 0;
         display: inline-block;
     }
+    .tour-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    transition: all 0.25s ease-in-out;
+    height: 100%;
+    }
+    .tour-card:hover {
+        box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    }
+    .badge {
+        display: inline-block;
+        background-color: #e0f2fe;
+        color: #0369a1;
+        border-radius: 9999px;
+        font-size: 12px;
+        padding: 4px 12px;
+        margin: 2px 5px 2px 0;
+    }
+    .highlight {
+        background-color: #d1fae5;
+        color: #065f46;
+        font-size: 12px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        margin: 4px 5px 4px 0;
+        display: inline-block;
+    }
+    input[type="text"] {
+        background-color: #f8fafc;
+    }
     </style>
 """, unsafe_allow_html=True)
 
