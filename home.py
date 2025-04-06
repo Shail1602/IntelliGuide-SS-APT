@@ -57,8 +57,8 @@ SESSION_STATE_FILE = "session_state.json"
 STAGE_NAME = "@apt_pdf_db.public.apt"
 
 def complete(model, prompt):
-    return "This is a mocked LLM response for: " + prompt
-    #return Complete(model, prompt, session=session).replace("$", "\$")
+    #return "This is a mocked LLM response for: " + prompt
+    return Complete(model, prompt, session=session).replace("$", "\$")
 
 
 def save_session_state():
