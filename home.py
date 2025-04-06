@@ -97,16 +97,26 @@ def auto_summarize(prompt, max_words=512):
 def complete(model_name, prompt):
     try:
         summarized_prompt = auto_summarize(prompt)
+
+        # Try local model
         result = llm_pipe(summarized_prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
 
-        if not result:
-            return "⚠️ No response generated. Please try rephrasing."
+        if isinstance(result, list) and len(result) > 0 and "generated_text" in result[0]:
+            return result[0]["generated_text"].split("[/INST]")[-1].strip()
 
-        return result[0]["generated_text"].split("[/INST]")[-1].strip()
+        else:
+            raise ValueError("Empty response from local model")
 
-    except Exception as e:
-        return f"❌ Error generating response: {e}"
+    except Exception as local_err:
+        # Log locally if you want: st.error(f"Local model failed: {local_err}")
+        try:
+            cortex_response = Complete(model_name, prompt, session=session)
+            return cortex_response.replace("$", "\$")
+        except Exception as cortex_err:
+            return f"❌ Both local and Cortex failed:\n- Local: {local_err}\n- Cortex: {cortex_err}"
 
+    #return "This is a mocked LLM response for: " + prompt
+    #return Complete(model, prompt, session=session).replace("$", "\$")
 
 
 def save_session_state():
