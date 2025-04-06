@@ -94,7 +94,7 @@ apply_styles()
 st.markdown("""
     <div style='background: linear-gradient(90deg, #0077b6, #90e0ef); padding: 25px 40px; border-radius: 15px; margin-bottom: 30px; color: white;'>
         <h2>🌏 SS IntelliGuide – APT Tour Admin</h2>
-        <p>Manage, Search, Edit & Export Tours – backed by AI & Travel Intelligence</p>
+        <p>Manage, Search, Edit & Export Tours</p>
     </div>
 """, unsafe_allow_html=True)
 
