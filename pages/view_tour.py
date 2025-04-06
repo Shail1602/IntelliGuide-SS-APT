@@ -102,46 +102,45 @@ def get_highlights(inclusions):
                 break
     return tags[:4]
 
-# --- Show 3 cards per row ---
-for i in range(0, len(paged), 3):
-    row = st.columns(3)
-    for j, tour in enumerate(paged[i:i+3]):
-        with row[j]:
-            st.markdown("<div class='tour-card'>", unsafe_allow_html=True)
-            st.markdown(f"### 📌 {tour.get('trip_name', 'Untitled')} ({tour.get('trip_code', 'N/A')})", unsafe_allow_html=True)
+# --- Show 3 cards per row dynamically ---
+cols = st.columns(3)
+for idx, tour in enumerate(paged):
+    with cols[idx % 3]:
+        st.markdown("<div class='tour-card'>", unsafe_allow_html=True)
+        st.markdown(f"### 📌 {tour.get('trip_name', 'Untitled')} ({tour.get('trip_code', 'N/A')})", unsafe_allow_html=True)
 
-            # Region/Country
-            badges = ""
-            if tour.get("region"):
-                badges += f"<span class='badge'>{tour['region']}</span>"
-            if tour.get("country"):
-                badges += f"<span class='badge'>{tour['country']}</span>"
-            st.markdown(badges, unsafe_allow_html=True)
+        # Region/Country
+        badges = ""
+        if tour.get("region"):
+            badges += f"<span class='badge'>{tour['region']}</span>"
+        if tour.get("country"):
+            badges += f"<span class='badge'>{tour['country']}</span>"
+        st.markdown(badges, unsafe_allow_html=True)
 
-            # Links
-            st.markdown(f"🔗 <b>Original:</b> [{tour.get('original_url')}]({tour.get('original_url')})", unsafe_allow_html=True)
-            if tour.get("booking_url"):
-                st.markdown(f"🔗 <b>Booking:</b> [{tour.get('booking_url')}]({tour.get('booking_url')})", unsafe_allow_html=True)
+        # Links
+        st.markdown(f"🔗 <b>Original:</b> [{tour.get('original_url')}]({tour.get('original_url')})", unsafe_allow_html=True)
+        if tour.get("booking_url"):
+            st.markdown(f"🔗 <b>Booking:</b> [{tour.get('booking_url')}]({tour.get('booking_url')})", unsafe_allow_html=True)
 
-            # Highlights
-            highlights = get_highlights(tour.get("trip_inclusions", []))
-            if highlights:
-                st.markdown("🌟 <b>Highlights:</b>", unsafe_allow_html=True)
-                st.markdown("".join([f"<span class='highlight'>{h}</span>" for h in highlights]), unsafe_allow_html=True)
+        # Highlights
+        highlights = get_highlights(tour.get("trip_inclusions", []))
+        if highlights:
+            st.markdown("🌟 <b>Highlights:</b>", unsafe_allow_html=True)
+            st.markdown("".join([f"<span class='highlight'>{h}</span>" for h in highlights]), unsafe_allow_html=True)
 
-            # Editable fields
-            st.markdown("📁 **Tour Details**")
-            tour["start_date"] = st.text_input("Start Date", value=tour.get("start_date", ""), key=f"start_{tour['trip_code']}")
-            tour["end_date"] = st.text_input("End Date", value=tour.get("end_date", ""), key=f"end_{tour['trip_code']}")
-            tour["price_aud"] = st.text_input("Price (AUD)", value=tour.get("price_aud", ""), key=f"price_{tour['trip_code']}")
-            tour["limited_availability"] = st.checkbox("🔴 Limited Availability", value=tour.get("limited_availability", False), key=f"limit_{tour['trip_code']}")
+        # Editable fields
+        st.markdown("📁 **Tour Details**")
+        tour["start_date"] = st.text_input("Start Date", value=tour.get("start_date", ""), key=f"start_{tour['trip_code']}")
+        tour["end_date"] = st.text_input("End Date", value=tour.get("end_date", ""), key=f"end_{tour['trip_code']}")
+        tour["price_aud"] = st.text_input("Price (AUD)", value=tour.get("price_aud", ""), key=f"price_{tour['trip_code']}")
+        tour["limited_availability"] = st.checkbox("🔴 Limited Availability", value=tour.get("limited_availability", False), key=f"limit_{tour['trip_code']}")
 
-            if st.button("💾 Save Changes", key=f"save_{tour['trip_code']}"):
-                with open(json_file, "w") as f:
-                    json.dump(tours, f, indent=2)
-                st.success("✅ Tour info updated!")
+        if st.button("💾 Save Changes", key=f"save_{tour['trip_code']}"):
+            with open(json_file, "w") as f:
+                json.dump(tours, f, indent=2)
+            st.success("✅ Tour info updated!")
 
-            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 # --- Footer ---
 st.markdown("""---  
