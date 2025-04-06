@@ -93,9 +93,10 @@ filtered_tours = [
 
 # --- Two-Column Card Layout ---
 cols = st.columns(2)
+# In your loop for each tour
 for idx, tour in enumerate(filtered_tours):
     with cols[idx % 2]:
-        st.markdown(f"""
+        html = f"""
         <div class="card">
             <h4>📌 {tour.get("trip_name", "")} <span style='color:#999;'>({tour.get("trip_code", "")})</span></h4>
             <div>
@@ -120,16 +121,16 @@ for idx, tour in enumerate(filtered_tours):
 
             <div class="divider"></div>
 
-            <div class="label">📅 Start Date:</div> {tour.get("start_date", "N/A")}
-            <div class="label">📅 End Date:</div> {tour.get("end_date", "N/A")}
-            <div class="label">💰 Price:</div> {tour.get("price_aud", "N/A")}
+            <div class="label">📅 Start Date:</div> {tour.get("start_date", "N/A")}<br>
+            <div class="label">📅 End Date:</div> {tour.get("end_date", "N/A")}<br>
+            <div class="label">💰 Price:</div> {tour.get("price_aud", "N/A")}<br>
             {'<div class="label" style="color:#c62828;">🔴 Limited Availability</div>' if tour.get("limited_availability") else ''}
 
-            <form method="post">
-                <input class="save-btn" type="submit" value="💾 Save Changes (UI Only)" />
-            </form>
+            <button class="save-btn">💾 Save Changes</button>
         </div>
-        """, unsafe_allow_html=True)
+        """
+        st.markdown(html, unsafe_allow_html=True)
+
 
 # --- Footer ---
 st.markdown("""
