@@ -11,6 +11,7 @@ import fitz
 from langchain_community.vectorstores import FAISS
 from langchain.embeddings.base import Embeddings
 from sentence_transformers import SentenceTransformer
+from langchain.schema import Document
 
 
 class LocalSentenceEmbeddings(Embeddings):
