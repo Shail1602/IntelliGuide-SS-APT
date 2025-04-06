@@ -12,7 +12,8 @@ from langchain_community.vectorstores import FAISS
 from langchain.embeddings.base import Embeddings
 from sentence_transformers import SentenceTransformer
 from langchain.schema import Document
-
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+import pdfplumber
 
 class LocalSentenceEmbeddings(Embeddings):
     def __init__(self, model_path="local_model"):
@@ -55,7 +56,8 @@ SESSION_STATE_FILE = "session_state.json"
 STAGE_NAME = "@apt_pdf_db.public.apt"
 
 def complete(model, prompt):
-    return Complete(model, prompt, session=session).replace("$", "\$")
+    return "This is a mocked LLM response for: " + prompt
+    #return Complete(model, prompt, session=session).replace("$", "\$")
 
 
 def save_session_state():
@@ -200,8 +202,8 @@ def init_config():
         st.toggle("🌓 Dark Mode", key="dark_mode", value=False)
         apply_theme()
         st.title("⚙️ Configuration")
-        st.radio("🔍 Use Search From", ["FAISS", "Cortex"], key="search_backend", horizontal=True)
-        st.selectbox("Cortex Search Service", [s["name"] for s in st.session_state.service_metadata], key="selected_cortex_search_service")
+        st.radio("🔍 Use Search From", ["FAISS"], key="search_backend", horizontal=True)
+        #st.selectbox("Cortex Search Service", [s["name"] for s in st.session_state.service_metadata], key="selected_cortex_search_service")
         st.button("🧹 Clear Chat", key="clear_conversation")
         st.toggle("🐞 Debug Mode", key="debug", value=False)
         st.toggle("🕘 Use Chat History", key="use_chat_history", value=True)
@@ -538,7 +540,7 @@ def main():
                 save_session_state()
                 st.success("Pinned!")
 
-    disable_chat = not st.session_state.service_metadata
+    disable_chat = False
     if question := st.chat_input("💬 Ask your question...", disabled=disable_chat):
         st.session_state.messages.append({"role": "user", "content": question})
         with st.spinner("SS IntelliGuide is typing..."):
