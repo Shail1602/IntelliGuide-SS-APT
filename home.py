@@ -96,10 +96,10 @@ def auto_summarize(prompt, max_words=512):
 
 def complete(model_name, prompt):
     try:
-        summarized_prompt = auto_summarize(prompt)
+       #  summarized_prompt = auto_summarize(prompt)
 
         # Try local model
-        result = llm_pipe(summarized_prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
+        result = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
 
         if isinstance(result, list) and len(result) > 0 and "generated_text" in result[0]:
             return result[0]["generated_text"].split("[/INST]")[-1].strip()
