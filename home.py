@@ -69,7 +69,7 @@ def get_local_llm(model_id="local_models/mistral7b"):
         model_id,
         torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
     )
-    pipe = pipeline("text-generation", model="mistral-large2", tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
+    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
     return tokenizer, pipe
 
 
