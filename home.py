@@ -99,6 +99,10 @@ def complete(model_name, prompt):
        #  summarized_prompt = auto_summarize(prompt)
 
         # Try local model
+        words = prompt.split()
+        if len(words) > 750:
+            prompt = " ".join(words[:750]) + "\n\n[Prompt trimmed to fit model limits]"
+            
         result = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
         print("🔍 Raw local model response:", result)
 
