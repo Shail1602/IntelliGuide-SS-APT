@@ -226,9 +226,12 @@ def query_faiss(query: str) -> str:
 
     context = ""
     for i, doc in enumerate(docs):
-        file = doc.metadata.get("relative_path", "unknown")
+        file = doc.metadata.get("source", "unknown")
         chunk = doc.page_content
-        context += f"Context {i+1}: {file}:\n{chunk}\n\n"
+        region = doc.metadata.get("region", "N/A")
+        duration = doc.metadata.get("duration", "N/A")
+        context += f"Context {i+1} | File: {file} | Region: {region} | Duration: {duration}\n{chunk}\n\n"
+
 
     if st.session_state.debug:
         st.sidebar.text_area("📄 FAISS Context Preview", context, height=300)
