@@ -14,4 +14,4 @@ tokenizer.save_pretrained(target_dir)
 
 # Zip the folder
 #shutil.make_archive(target_dir, 'zip', target_dir)
-print("✅ Model downloaded and zipped successfully.")
+print("✅ Model downloaded  successfully.")

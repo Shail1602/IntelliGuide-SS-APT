@@ -100,6 +100,7 @@ def complete(model_name, prompt):
 
         # Try local model
         result = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
+        print("🔍 Raw local model response:", result)
 
         if isinstance(result, list) and len(result) > 0 and "generated_text" in result[0]:
             return result[0]["generated_text"].split("[/INST]")[-1].strip()
