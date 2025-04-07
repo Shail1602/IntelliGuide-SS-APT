@@ -69,7 +69,7 @@ def get_local_llm(model_id="local_models/mistral7b"):
         model_id,
         torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
     )
-    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
+    pipe = pipeline("text-generation", model="mistral-large2", tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
     return tokenizer, pipe
 
 
@@ -110,7 +110,7 @@ def complete(model_name, prompt):
     except Exception as local_err:
         # Log locally if you want: st.error(f"Local model failed: {local_err}")
         try:
-            cortex_response = Complete(model_name, prompt, session=session)
+            cortex_response = Complete("mistral-large2", prompt, session=session)
             return cortex_response.replace("$", "\$")
         except Exception as cortex_err:
             return f"❌ Both local and Cortex failed:\n- Local: {local_err}\n- Cortex: {cortex_err}"
