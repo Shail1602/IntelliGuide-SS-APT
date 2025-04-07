@@ -62,6 +62,12 @@ TOPICS = ["All Locations", "Europe", "Australia", "New-Zealand", "Asia", "Africa
 SESSION_STATE_FILE = "session_state.json"
 STAGE_NAME = "@apt_pdf_db.public.apt"
 
+def extract_location_keywords(query):
+    # Define all known regions or locations here
+    known_locations = ["india", "europe", "japan", "new zealand", "canada", "africa", "peru", "south australia", "vietnam", "kimberley"]
+    return [loc.lower() for loc in known_locations if loc.lower() in query.lower()]
+
+
 @st.cache_resource
 def get_local_llm(model_id="local_models/mistral7b"):
     tokenizer = AutoTokenizer.from_pretrained(model_id, use_fast=False)
@@ -229,14 +235,23 @@ def query_cortex(query, columns=None, filter={}):
 def query_faiss(query: str) -> str:
     docs: list[Document] = faiss_db.similarity_search(query, k=st.session_state.num_retrieved_chunks)
 
+    # Step 1: Detect intent/location
+    keywords = extract_location_keywords(query)
+
+    # Step 2: Filter if keyword matches metadata
+    if keywords:
+        filtered_docs = [doc for doc in docs if any(kw in doc.metadata.get("region", "").lower() or kw in doc.metadata.get("country", "").lower() for kw in keywords)]
+        if filtered_docs:
+            docs = filtered_docs  # override with more relevant subset
+
+    # Step 3: Build context
     context = ""
     for i, doc in enumerate(docs):
         file = doc.metadata.get("source", "unknown")
         chunk = doc.page_content
         region = doc.metadata.get("region", "N/A")
-        duration = doc.metadata.get("duration", "N/A")
-        context += f"Context {i+1} | File: {file} | Region: {region} | Duration: {duration}\n{chunk}\n\n"
-
+        country = doc.metadata.get("country", "N/A")
+        context += f"Context {i+1} | File: {file} | Region: {region} | Country: {country}\n{chunk}\n\n"
 
     if st.session_state.debug:
         st.sidebar.text_area("📄 FAISS Context Preview", context, height=300)

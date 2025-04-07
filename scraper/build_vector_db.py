@@ -41,13 +41,20 @@ for folder in PDF_FOLDERS:
         if filename.endswith(".pdf"):
             path = os.path.join(folder, filename)
             file_key = filename.replace(" ", "_").lower()
-            tour_meta = tour_lookup.get(file_key, {"source": f"{folder}/{filename}"})
+            tour_meta = tour_lookup.get(file_key, {})
+            tour_meta_enriched = {
+                "source": f"{folder}/{filename}",
+                "trip_name": tour_meta.get("Trip Name", "Unknown"),
+                "trip_code": tour_meta.get("Trip Code", "Unknown"),
+                "region": tour_meta.get("Region", "Unknown"),
+                "country": tour_meta.get("Country", "Unknown"),
+            }
 
             with pdfplumber.open(path) as pdf:
                 raw_text = "\n".join([page.extract_text() or "" for page in pdf.pages])
                 if raw_text.strip():
                     chunks = splitter.split_text(raw_text)
-                    metadata = [tour_meta] * len(chunks)
+                    metadata = [tour_meta_enriched] * len(chunks)
                     all_chunks.extend(zip(chunks, metadata))
 
 # 📘 Also embed full JSON tour info as text
