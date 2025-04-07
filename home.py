@@ -286,7 +286,7 @@ def init_config():
         st.title("⚙️ Configuration")
         # st.radio("🔍 Use Search From", ["FAISS"], key="search_backend", horizontal=True)
         st.session_state.search_backend = "Cortex"
-        st.session_state.service_metadata ="selected_cortex_search_service"
+        # st.session_state.service_metadata ="selected_cortex_search_service"
         #st.selectbox("Cortex Search Service", [s["name"] for s in st.session_state.service_metadata], key="selected_cortex_search_service")
         st.button("🧹 Clear Chat", key="clear_conversation")
         st.toggle("🐞 Debug Mode", key="debug", value=False)
