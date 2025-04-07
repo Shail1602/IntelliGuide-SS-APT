@@ -285,6 +285,7 @@ def init_config():
         apply_theme()
         st.title("⚙️ Configuration")
         st.radio("🔍 Use Search From", ["FAISS"], key="search_backend", horizontal=True)
+        st.session_state.search_backend = "Cortex"
         #st.selectbox("Cortex Search Service", [s["name"] for s in st.session_state.service_metadata], key="selected_cortex_search_service")
         st.button("🧹 Clear Chat", key="clear_conversation")
         st.toggle("🐞 Debug Mode", key="debug", value=False)
@@ -613,8 +614,8 @@ def main():
     
 
     add_custom_css()
-    if st.session_state.get("search_backend", "Cortex") == "Cortex":
-        init_service_metadata()
+    #if st.session_state.get("search_backend", "Cortex") == "Cortex":
+    init_service_metadata()
     handle_uploaded_pdf()
     init_config()
     init_messages()
