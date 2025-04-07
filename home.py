@@ -186,10 +186,7 @@ def build_prompt(question):
     chat_history = get_chat_history() if st.session_state.use_chat_history else []
     chat_text = "\n".join([msg["content"] for msg in chat_history if msg["role"] == "user"])
     summary = summarize_chat(chat_text, question) if chat_history else question
-    if st.session_state.search_backend == "FAISS":
-        context = query_faiss(summary)
-    else:
-        context = query_cortex(summary)
+    context = query_cortex(summary)
     prompt = f"""
     [INST]
     You are SS IntelliGuide, a helpful AI assistant with access to APT PDF-based knowledge.
