@@ -10,13 +10,13 @@ PyMuPDF
 PyPDF2
 pdfplumber
 faiss-cpu
-sentence-transformers==2.6.0
+sentence-transformers>=2.6.0
 torch==2.2.1
-transformers==4.39.1
+transformers==4.37.2
 numpy
 langchain==0.1.17
 langchain-community==0.0.36
-langchain-huggingface==0.0.3
+langchain-huggingface==0.0.1
 langchain-text-splitters
 safetensors
 accelerate
