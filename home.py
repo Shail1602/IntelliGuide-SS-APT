@@ -117,8 +117,10 @@ def init_service_metadata():
         metadata = []
         for s in services:
             svc_name = s["name"]
-            search_col = session.sql(f"DESC CORTEX SEARCH SERVICE {svc_name};").collect()[0]["search_column"]
-            metadata.append({"name": svc_name, "search_column": search_col})
+            desc_result = session.sql(f"DESC CORTEX SEARCH SERVICE {svc_name};").collect()
+            if desc_result:
+                search_col = desc_result[0].get("search_column", "chunk")
+                metadata.append({"name": svc_name, "search_column": search_col})
         st.session_state.service_metadata = metadata
 
 
@@ -551,7 +553,7 @@ def main():
 
     add_custom_css()
     #if st.session_state.get("search_backend", "Cortex") == "Cortex":
-    #init_service_metadata()
+    init_service_metadata()
     handle_uploaded_pdf()
     init_config()
     init_messages()
