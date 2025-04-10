@@ -381,7 +381,7 @@ def generate_summary():
     ...
     [/INST]
     """
-    summary = complete(st.session_state.model_name, prompt)
+    summary = complete( prompt)
     return summary.strip()
 
 
@@ -607,7 +607,7 @@ def main():
         st.session_state.messages.append({"role": "user", "content": question})
         with st.spinner("SS IntelliGuide is typing..."):
             prompt = build_prompt(question.replace("'", ""))
-            reply = complete(st.session_state.model_name, prompt)
+            reply = complete( prompt)
             st.session_state.messages.append({"role": "assistant", "content": reply})
             save_session_state()
             st.markdown(f"<div class='chat-left'>{reply}</div>", unsafe_allow_html=True)
