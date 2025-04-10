@@ -10,7 +10,7 @@ PyMuPDF
 PyPDF2
 pdfplumber
 faiss-cpu
-sentence-transformers==2.5.1
+sentence-transformers==2.6.0
 torch==2.2.1
 transformers==4.39.1
 numpy
