@@ -12,11 +12,12 @@ pdfplumber
 faiss-cpu
 sentence-transformers>=2.6.0
 torch==2.2.1
-transformers==4.37.2
+transformers==4.39.1
+tokenizers==0.19.1
 numpy
 langchain==0.1.17
 langchain-community==0.0.36
-langchain-huggingface==0.0.1
+langchain-huggingface==0.0.3
 langchain-text-splitters
 safetensors
 accelerate
