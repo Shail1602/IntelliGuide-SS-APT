@@ -14,12 +14,10 @@ sentence-transformers==2.5.1
 torch==2.2.1
 transformers==4.39.1
 numpy
-langchain
-langchain-huggingface
-snowflake==1.0.4
+langchain==0.2.3
 langchain-text-splitters
+langchain-huggingface
+huggingface_hub[hf_xet]
 safetensors
 accelerate
 bitsandbytes
-transformers
-huggingface_hub[hf_xet]
