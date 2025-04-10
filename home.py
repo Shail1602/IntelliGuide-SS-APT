@@ -86,11 +86,6 @@ def auto_summarize(prompt, max_words=1024):
 
 
 def complete(prompt: str) -> str:
-    if hasattr(tokenizer, "model_max_length"):
-        max_input_length = tokenizer.model_max_length
-    tokens = tokenizer(prompt, truncation=True, max_length=max_input_length, return_tensors="pt")
-    prompt = tokenizer.decode(tokens["input_ids"][0])
-
     if not prompt or len(prompt.strip()) < 5:
         return "[⚠️ Empty or too short prompt]"
 
