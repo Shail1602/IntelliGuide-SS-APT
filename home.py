@@ -16,7 +16,7 @@ import pdfplumber
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 import torch
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
@@ -119,9 +119,13 @@ def init_service_metadata():
             svc_name = s["name"]
             desc_result = session.sql(f"DESC CORTEX SEARCH SERVICE {svc_name};").collect()
             if desc_result:
-                search_col = desc_result[0].get("search_column", "chunk")
+                try:
+                    search_col = desc_result[0]["search_column"]
+                except KeyError:
+                    search_col = "chunk"
                 metadata.append({"name": svc_name, "search_column": search_col})
         st.session_state.service_metadata = metadata
+
 
 
 def get_chat_history():
