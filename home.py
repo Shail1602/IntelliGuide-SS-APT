@@ -16,8 +16,7 @@ import pdfplumber
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 import torch
-
-
+from langchain.embeddings import HuggingFaceEmbeddings
 
 APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
