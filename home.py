@@ -82,21 +82,36 @@ def auto_summarize(prompt, max_words=1024):
 
 def complete(prompt: str) -> str:
     if not prompt or len(prompt.strip()) < 5:
-        return "[⚠️ Empty or too short prompt]"
+        return "[\u26a0\ufe0f Empty or too short prompt]"
 
     try:
+        # Ensure prompt length doesn't exceed model's limit
+        max_tokens_allowed = 1024
+        prompt_words = prompt.strip().split()
+        if len(prompt_words) > max_tokens_allowed:
+            prompt = " ".join(prompt_words[:max_tokens_allowed]) + "\n\n[Prompt truncated]"
+
         result = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
 
         # Add debug print to confirm shape
-        print("🔍 Raw model result:", result)
+        print("\ud83d\udd0d Raw model result:", result)
 
-        if not result or not isinstance(result, list) or "generated_text" not in result[0]:
-            return "[❌ Index error: No output from the model]"
+        if not result or not isinstance(result, list):
+            return "[\u274c Model returned an empty or invalid result]"
 
-        return result[0]["generated_text"].split("[/INST]")[-1].strip()
-    
+        gen_text = result[0].get("generated_text", "").strip()
+        if not gen_text:
+            return "[\u274c Model did not return any generated text]"
+
+        # Handle cases with [INST] formatting or plain continuation
+        if "[/INST]" in gen_text:
+            return gen_text.split("[/INST]")[-1].strip()
+        return gen_text
+
+    except IndexError as ie:
+        return f"[\u274c IndexError in model output: {str(ie)}]"
     except Exception as e:
-        return f"[❌ Exception: {str(e)}]"
+        return f"[\u274c Model exception: {str(e)}]"
 
 
 
