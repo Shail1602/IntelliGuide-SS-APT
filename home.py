@@ -54,11 +54,12 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-def get_local_llm(model_id="local_models/mistral7b"):
-    tokenizer = AutoTokenizer.from_pretrained(model_id, use_fast=False)
-    model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32)
-    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
+def get_local_llm(model_id="gpt2"):
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForCausalLM.from_pretrained(model_id)
+    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=-1)
     return tokenizer, pipe
+
 
 tokenizer, llm_pipe = get_local_llm()
 
@@ -85,19 +86,18 @@ def complete(prompt: str) -> str:
 
     try:
         result = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
-        
-        # Make sure result is a list with at least one item
-        if not result or not isinstance(result, list) or "generated_text" not in result[0]:
-            return "[⚠️ Model did not return any valid text]"
 
-        # Safely parse and return
+        # Add debug print to confirm shape
+        print("🔍 Raw model result:", result)
+
+        if not result or not isinstance(result, list) or "generated_text" not in result[0]:
+            return "[❌ Index error: No output from the model]"
+
         return result[0]["generated_text"].split("[/INST]")[-1].strip()
     
-    except IndexError:
-        return "[❌ Index error: No output from the model]"
-    
     except Exception as e:
-        return f"[❌ Exception during text generation: {str(e)}]"
+        return f"[❌ Exception: {str(e)}]"
+
 
 
 def save_session_state():
