@@ -15,10 +15,11 @@ torch==2.2.1
 transformers==4.39.1
 numpy
 langchain
-langchain-community
+langchain-huggingface
 snowflake==1.0.4
 langchain-text-splitters
 safetensors
 accelerate
 bitsandbytes
 transformers
+huggingface_hub[hf_xet]
