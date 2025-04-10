@@ -17,21 +17,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 import torch
 
-class LocalSentenceEmbeddings(Embeddings):
-    def __init__(self, model_path="local_model"):
-        self.model = SentenceTransformer(model_path, trust_remote_code=True)
-
-    def embed_documents(self, texts):
-        return self.model.encode(texts, convert_to_numpy=True).tolist()
-
-    def embed_query(self, text):
-        return self.model.encode(text, convert_to_numpy=True).tolist()
-
-# Load FAISS DB using local embeddings
-
-model_path = "local_model"
-embedding_model = LocalSentenceEmbeddings(model_path)
-faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
 
 
 APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
@@ -39,7 +24,8 @@ st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
 
-model = SentenceTransformer(model_path)
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
 
 # embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 # faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
@@ -71,15 +57,11 @@ def extract_location_keywords(query):
 @st.cache_resource
 def get_local_llm(model_id="local_models/mistral7b"):
     tokenizer = AutoTokenizer.from_pretrained(model_id, use_fast=False)
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
-    )
+    model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32)
     pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
     return tokenizer, pipe
 
-
-tokenizer, llm_pipe  = get_local_llm()
+tokenizer, llm_pipe = get_local_llm()
 
 def auto_summarize(prompt, max_words=512):
     words = prompt.split()
@@ -100,35 +82,9 @@ def auto_summarize(prompt, max_words=512):
         return " ".join(words[:max_words]) + "\n\n[Auto-trimmed due to summarization failure]"
 
 
-def complete(model_name, prompt):
-    try:
-        summarized_prompt = auto_summarize(prompt)
-
-        # Try local model
-        words = prompt.split()
-        if len(words) > 750:
-            prompt = " ".join(words[:750]) + "\n\n[Prompt trimmed to fit model limits]"
-            
-        result = llm_pipe(summarized_prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
-        print("🔍 Raw local model response:", result)
-
-        if isinstance(result, list) and len(result) > 0 and "generated_text" in result[0]:
-            return result[0]["generated_text"].split("[/INST]")[-1].strip()
-
-        else:
-            raise ValueError("Empty response from local model")
-
-    except Exception as local_err:
-        # Log locally if you want: st.error(f"Local model failed: {local_err}")
-        try:
-            cortex_response = Complete("mistral-large2", prompt, session=session)
-            return cortex_response.replace("$", "\$")
-        except Exception as cortex_err:
-            return f"❌ Both local and Cortex failed:\n- Local: {local_err}\n- Cortex: {cortex_err}"
-
-    #return "This is a mocked LLM response for: " + prompt
-    #return Complete(model, prompt, session=session).replace("$", "\$")
-
+def complete(prompt):
+    result = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
+    return result[0]["generated_text"].split("[/INST]")[-1].strip()
 
 def save_session_state():
     with open(SESSION_STATE_FILE, "w") as f:
@@ -183,23 +139,18 @@ def summarize_chat(chat_history, question):
 
 
 def build_prompt(question):
-    chat_history = get_chat_history() if st.session_state.use_chat_history else []
-    chat_text = "\n".join([msg["content"] for msg in chat_history if msg["role"] == "user"])
-    summary = summarize_chat(chat_text, question) if chat_history else question
-    context = query_cortex(summary)
-    prompt = f"""
+    context = query_faiss(question)
+    return f"""
     [INST]
     You are SS IntelliGuide, a helpful AI assistant with access to APT PDF-based knowledge.
-    Use the provided <context> and <chat_history> to answer user questions.
-    Respond clearly, briefly, and helpfully.
+    Use the following context to answer user questions concisely and clearly.
 
-    <chat_history>{chat_text}</chat_history>
     <context>{context}</context>
     <question>{question}</question>
     [/INST]
     Answer:
     """
-    return prompt
+
 
 
 def query_cortex(query, columns=None, filter={}):
@@ -231,28 +182,12 @@ def query_cortex(query, columns=None, filter={}):
 
 def query_faiss(query: str) -> str:
     docs: list[Document] = faiss_db.similarity_search(query, k=st.session_state.num_retrieved_chunks)
-
-    # Step 1: Detect intent/location
-    keywords = extract_location_keywords(query)
-
-    # Step 2: Filter if keyword matches metadata
-    if keywords:
-        filtered_docs = [doc for doc in docs if any(kw in doc.metadata.get("region", "").lower() or kw in doc.metadata.get("country", "").lower() for kw in keywords)]
-        if filtered_docs:
-            docs = filtered_docs  # override with more relevant subset
-
-    # Step 3: Build context
     context = ""
     for i, doc in enumerate(docs):
         file = doc.metadata.get("source", "unknown")
-        chunk = doc.page_content
         region = doc.metadata.get("region", "N/A")
         country = doc.metadata.get("country", "N/A")
-        context += f"Context {i+1} | File: {file} | Region: {region} | Country: {country}\n{chunk}\n\n"
-
-    if st.session_state.debug:
-        st.sidebar.text_area("📄 FAISS Context Preview", context, height=300)
-
+        context += f"Context {i+1} | File: {file} | Region: {region} | Country: {country}\n{doc.page_content}\n\n"
     return context
 
 def apply_theme():
@@ -617,7 +552,7 @@ def main():
 
     add_custom_css()
     #if st.session_state.get("search_backend", "Cortex") == "Cortex":
-    init_service_metadata()
+    #init_service_metadata()
     handle_uploaded_pdf()
     init_config()
     init_messages()
