@@ -20,3 +20,5 @@ snowflake==1.0.4
 langchain-text-splitters
 safetensors
 accelerate
+bitsandbytes
+transformers
