@@ -62,10 +62,10 @@ def get_local_llm(model_id="local_models/mistral7b"):
 
 tokenizer, llm_pipe = get_local_llm()
 
-def auto_summarize(prompt, max_words=512):
+def auto_summarize(prompt, max_words=1024):
     words = prompt.split()
     if len(words) <= max_words:
-        return prompt  # no need to summarize
+        return prompt
 
     summary_prompt = f"""
     [INST]
@@ -74,16 +74,31 @@ def auto_summarize(prompt, max_words=512):
     {prompt}
     [/INST]
     """
+
+    return complete(summary_prompt)
+
+
+
+def complete(prompt: str) -> str:
+    if not prompt or len(prompt.strip()) < 5:
+        return "[⚠️ Empty or too short prompt]"
+
     try:
-        result = llm_pipe(summary_prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
+        result = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
+        
+        # Make sure result is a list with at least one item
+        if not result or not isinstance(result, list) or "generated_text" not in result[0]:
+            return "[⚠️ Model did not return any valid text]"
+
+        # Safely parse and return
         return result[0]["generated_text"].split("[/INST]")[-1].strip()
-    except Exception:
-        return " ".join(words[:max_words]) + "\n\n[Auto-trimmed due to summarization failure]"
+    
+    except IndexError:
+        return "[❌ Index error: No output from the model]"
+    
+    except Exception as e:
+        return f"[❌ Exception during text generation: {str(e)}]"
 
-
-def complete(prompt):
-    result = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
-    return result[0]["generated_text"].split("[/INST]")[-1].strip()
 
 def save_session_state():
     with open(SESSION_STATE_FILE, "w") as f:
@@ -223,10 +238,12 @@ def init_config():
         st.title("⚙️ Configuration")
         # st.radio("🔍 Use Search From", ["FAISS"], key="search_backend", horizontal=True)
         st.session_state.search_backend = "Cortex"
-        if "selected_cortex_search_service" not in st.session_state:
-            service_names = [s["name"] for s in st.session_state.service_metadata]
-            if service_names:
-                st.session_state.selected_cortex_search_service = service_names[0]
+        if "model_name" not in st.session_state:
+            st.session_state.model_name = "mistral-large2"
+        #if "selected_cortex_search_service" not in st.session_state:
+         #   service_names = [s["name"] for s in st.session_state.service_metadata]
+          #  if service_names:
+           #     st.session_state.selected_cortex_search_service = service_names[0]
         # st.session_state.service_metadata ="selected_cortex_search_service"
         #st.selectbox("Cortex Search Service", [s["name"] for s in st.session_state.service_metadata], key="selected_cortex_search_service")
         st.button("🧹 Clear Chat", key="clear_conversation")
