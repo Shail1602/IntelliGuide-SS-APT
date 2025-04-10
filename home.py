@@ -140,7 +140,7 @@ def summarize_chat(chat_history, question):
     <question>{question}</question>
     [/INST]
     """
-    return complete(st.session_state.model_name, prompt)
+    return complete(prompt)
 
 
 def build_prompt(question):
