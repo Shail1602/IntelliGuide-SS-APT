@@ -26,9 +26,8 @@ MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
 
 #embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-embedding_model = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-)
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", cache_folder=".cache")
+
 faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
 
 # embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
