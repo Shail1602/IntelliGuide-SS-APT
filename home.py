@@ -54,11 +54,16 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-def get_local_llm(model_id="gpt2"):
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    model = AutoModelForCausalLM.from_pretrained(model_id)
-    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=-1)
+def get_local_llm(model_id="local_models/mistral7b"):
+    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_id,
+        torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+        device_map="auto"
+    )
+    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
     return tokenizer, pipe
+
 
 
 tokenizer, llm_pipe = get_local_llm()
@@ -81,38 +86,29 @@ def auto_summarize(prompt, max_words=1024):
 
 
 def complete(prompt: str) -> str:
+    if hasattr(tokenizer, "model_max_length"):
+        max_input_length = tokenizer.model_max_length
+    tokens = tokenizer(prompt, truncation=True, max_length=max_input_length, return_tensors="pt")
+    prompt = tokenizer.decode(tokens["input_ids"][0])
+
     if not prompt or len(prompt.strip()) < 5:
-        return "[\u26a0\ufe0f Empty or too short prompt]"
+        return "[⚠️ Empty or too short prompt]"
 
     try:
-        # Ensure prompt length doesn't exceed model's limit
-        max_tokens_allowed = 1024
-        prompt_words = prompt.strip().split()
-        if len(prompt_words) > max_tokens_allowed:
-            prompt = " ".join(prompt_words[:max_tokens_allowed]) + "\n\n[Prompt truncated]"
-
         result = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
 
-        # Add debug print to confirm shape
-        print("\ud83d\udd0d Raw model result:", result)
-
         if not result or not isinstance(result, list):
-            return "[\u274c Model returned an empty or invalid result]"
+            return "[❌ No result from model]"
+        
+        output = result[0].get("generated_text", "").strip()
+        if "[/INST]" in output:
+            return output.split("[/INST]")[-1].strip()
+        return output or "[❌ Model returned empty response]"
 
-        gen_text = result[0].get("generated_text", "").strip()
-        if not gen_text:
-            return "[\u274c Model did not return any generated text]"
-
-        # Handle cases with [INST] formatting or plain continuation
-        if "[/INST]" in gen_text:
-            return gen_text.split("[/INST]")[-1].strip()
-        return gen_text
-
-    except IndexError as ie:
-        return f"[\u274c IndexError in model output: {str(ie)}]"
+    except IndexError:
+        return "[❌ IndexError: Model output index out of range]"
     except Exception as e:
-        return f"[\u274c Model exception: {str(e)}]"
-
+        return f"[❌ Exception in model: {str(e)}]"
 
 
 def save_session_state():
