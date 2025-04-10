@@ -19,3 +19,4 @@ langchain-community
 snowflake==1.0.4
 langchain-text-splitters
 safetensors
+accelerate
