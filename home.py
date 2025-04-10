@@ -57,14 +57,20 @@ def extract_location_keywords(query):
 
 @st.cache_resource
 def get_local_llm(model_id="local_models/mistral7b"):
-    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_id,
+        trust_remote_code=True,
+        use_fast=False  
+    )
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
+        trust_remote_code=True,
         torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
         device_map="auto"
     )
     pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
     return tokenizer, pipe
+
 
 
 
