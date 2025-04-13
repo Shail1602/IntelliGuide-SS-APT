@@ -67,7 +67,7 @@ def get_local_llm(model_id="sshleifer/tiny-gpt2"):
         
         tokenizer = AutoTokenizer.from_pretrained(
             model_id,
-            trust_remote_code=False,  # safer default
+            trust_remote_code=False,
             use_fast=False
         )
         print("✅ Tokenizer loaded")
@@ -75,18 +75,20 @@ def get_local_llm(model_id="sshleifer/tiny-gpt2"):
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
             trust_remote_code=False,
-            torch_dtype=torch.float32,  # safer than float16 for CPU
-            device_map="cpu"  # force CPU for now to avoid GPU crash
+            torch_dtype=torch.float32,
+            device_map="cpu"  # This uses accelerate to pin to CPU
         )
         print("✅ Model loaded")
 
-        pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=-1)
+        # ❗ REMOVE `device=-1` to avoid crash
+        pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
         print("✅ Pipeline initialized")
         return tokenizer, pipe
 
     except Exception as e:
         print("❌ Exception during LLM loading:", str(e))
         raise
+
 
 
 try:
