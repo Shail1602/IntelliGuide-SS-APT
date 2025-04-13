@@ -192,7 +192,7 @@ def build_prompt(question):
     return f"""
 You are SS IntelliGuide – a smart, conversational travel assistant.
 You will read the tour content and answer the user's question in a **friendly, readable and natural format**. If a booking URL is available, include it as a clickable link.
-
+If the user asks for an itinerary, ensure each day is detailed and listed sequentially from Day 1 to the final day.
 <tags>
 {tag_line}
 </tags>
@@ -313,7 +313,7 @@ def init_config():
         
         with st.expander("🧠 Advanced Options"):
             st.selectbox("Select Model", MODELS, key="model_name")
-            st.slider("Context Chunks", 1, 50, 20, key="num_retrieved_chunks")
+            st.slider("Context Chunks", 1, 100, 50, key="num_retrieved_chunks")
             st.slider("Chat History Messages", 1, 10, 5, key="num_chat_messages")
 
 def upload_to_snowflake_stage(uploaded_file):
