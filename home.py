@@ -61,7 +61,7 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-def get_local_llm(model_id="tiiuae/falcon-rw-1b"):
+def get_local_llm(model_id="EleutherAI/gpt-neo-125M"):
     try:
         print(f"📦 Attempting to load model from: {model_id}")
         
@@ -119,7 +119,7 @@ def complete(prompt: str) -> str:
         return "[⚠️ Empty or too short prompt]"
 
     try:
-        result = llm_pipe(prompt, max_new_tokens=512, do_sample=True, temperature=0.7)
+        result = llm_pipe(prompt[:1000], max_new_tokens=200, do_sample=True, temperature=0.7)
 
         if not result or not isinstance(result, list):
             return "[❌ No result from model]"
