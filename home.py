@@ -79,10 +79,23 @@ def get_openrouter_llm():
                 }
             )
             result = response.json()
-            return result["choices"][0]["message"]["content"].strip()
+
+            # Debug log to Streamlit sidebar
+            if st.session_state.get("debug", False):
+                st.sidebar.write("🔍 OpenRouter Raw Response:", result)
+
+            # Proper error handling
+            if "choices" in result:
+                return result["choices"][0]["message"]["content"].strip()
+            elif "error" in result:
+                return f"[❌ OpenRouter API Error: {result['error'].get('message', 'No error message')}]"
+            else:
+                return "[❌ Unexpected response format from OpenRouter]"
+
         except Exception as e:
-            return f"[❌ OpenRouter Error: {str(e)}]"
+            return f"[❌ Exception: {str(e)}]"
     return chat_completion
+
 
 llm_pipe = get_openrouter_llm()
 
