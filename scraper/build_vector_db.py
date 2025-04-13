@@ -60,7 +60,9 @@ for folder in PDF_FOLDERS:
             with pdfplumber.open(path) as pdf:
                 raw_text = "\n".join([page.extract_text() or "" for page in pdf.pages])
                 if raw_text.strip():
-                    chunks = splitter.split_text(raw_text)
+                    # chunks = splitter.split_text(raw_text)
+                    chunks = splitter.split_text(f"Trip Code: {tour_meta_enriched['trip_code']}\nTrip Name: {tour_meta_enriched['trip_name']}\n{raw_text}")
+
                     metadata = [tour_meta_enriched] * len(chunks)
                     all_chunks.extend(zip(chunks, metadata))
 
@@ -79,7 +81,8 @@ if os.path.exists(JSON_FILE):
                 else:
                     text_parts.append(f"{k.replace('_', ' ').title()}: {v}")
             full_text = "\n".join(text_parts)
-            chunks = splitter.split_text(full_text)
+            # chunks = splitter.split_text(full_text)
+            chunks = splitter.split_text(f"Trip Code: {tour_meta_enriched['trip_code']}\nTrip Name: {tour_meta_enriched['trip_name']}\n{raw_text}")
             metadata = [{**tour, "source": "tour_info.json"}] * len(chunks)
             all_chunks.extend(zip(chunks, metadata))
 

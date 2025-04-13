@@ -181,16 +181,30 @@ def summarize_chat(chat_history, question):
 
 def build_prompt(question):
     context = query_faiss(question)
+    tags = []
+    for line in context.splitlines():
+        if "Trip Code:" in line or "Region:" in line:
+            tags.append(line.strip())
+    tag_line = " | ".join(set(tags))
+    
     return f"""
-    [INST]
-    You are SS IntelliGuide, a helpful AI assistant with access to APT PDF-based knowledge.
-    Use the following context to answer user questions concisely and clearly.
+You are SS IntelliGuide – your responses must strictly use the below tour information.
 
-    <context>{context}</context>
-    <question>{question}</question>
-    [/INST]
-    Answer:
-    """
+<tags>
+{tag_line}
+</tags>
+
+<context>
+{context}
+</context>
+
+<question>
+{question}
+</question>
+
+Answer only from the context. Do not assume.
+"""
+
 
 
 
