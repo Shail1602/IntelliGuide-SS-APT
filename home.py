@@ -644,7 +644,16 @@ def main():
     if question := st.chat_input("💬 Ask your question...", disabled=disable_chat):
         st.session_state.messages.append({"role": "user", "content": question})
         with st.spinner("SS IntelliGuide is typing..."):
-            prompt = build_prompt(question.replace("'", ""))
+            question= question.replace("'", "")
+            if st.session_state.get("use_chat_history"):
+                history = get_chat_history()
+                full_question = summarize_chat(history, question)
+            else:
+                full_question = question
+
+            prompt = build_prompt(full_question)
+
+            # prompt = build_prompt(question.replace("'", ""))
             reply = complete( prompt)
             st.session_state.messages.append({"role": "assistant", "content": reply})
             save_session_state()
