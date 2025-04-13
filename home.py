@@ -593,7 +593,7 @@ def main():
 
     add_custom_css()
     #if st.session_state.get("search_backend", "Cortex") == "Cortex":
-    init_service_metadata()
+    # init_service_metadata()
     handle_uploaded_pdf()
     init_config()
     init_messages()
