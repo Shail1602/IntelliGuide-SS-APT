@@ -21,3 +21,4 @@ langchain-text-splitters
 safetensors
 accelerate
 bitsandbytes
+pydantic==1.10.13
