@@ -19,13 +19,12 @@ import torch
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from transformers import MistralForCausalLM
 import pydantic
-from openai import OpenAI
+import requests
 
 APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
 
-client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 #embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", cache_folder=".cache")
 
@@ -59,22 +58,34 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-def get_openai_llm():
+def get_openrouter_llm():
     def chat_completion(prompt):
         try:
-            response = client.chat.completions.create(
-                        model="gpt-3.5-turbo",
-                        messages=[{"role": "user", "content": prompt}],
-                        max_tokens=512,
-                        temperature=0.5
-                    )
-
-            return response.choices[0].message.content.strip()
+            response = requests.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {st.secrets['openrouter']['api_key']}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": st.session_state.get("model_name", "openrouter/mistralai/mistral-7b-instruct"),
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0.5,
+                    "max_tokens": 512
+                }
+            )
+            result = response.json()
+            return result["choices"][0]["message"]["content"].strip()
         except Exception as e:
-            return f"[❌ OpenAI Error: {str(e)}]"
+            return f"[❌ OpenRouter Error: {str(e)}]"
     return chat_completion
 
-llm_pipe = get_openai_llm()
+llm_pipe = get_openrouter_llm()
+
+def complete(prompt: str) -> str:
+    if not prompt or len(prompt.strip()) < 5:
+        return "[⚠️ Empty or too short prompt]"
+    return llm_pipe(prompt)
 
 
 def auto_summarize(prompt, max_words=1024):
@@ -91,15 +102,6 @@ def auto_summarize(prompt, max_words=1024):
     """
 
     return complete(summary_prompt)
-
-
-
-def complete(prompt: str) -> str:
-    if not prompt or len(prompt.strip()) < 5:
-        return "[⚠️ Empty or too short prompt]"
-    return llm_pipe(prompt)
-
-
 
 
 def save_session_state():
