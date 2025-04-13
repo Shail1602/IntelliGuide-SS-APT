@@ -61,21 +61,24 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-def get_local_llm(model_id="local_models/mistral7b"):
+def get_local_llm(model_id="microsoft/phi-1_5", local_path="local_models/phi"):
     from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
+    import os
 
-    print(f"📦 Attempting to load model from: {model_id}")
-
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    print("✅ Tokenizer loaded")
-
-    model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
-    print("✅ Model loaded")
+    if not os.path.exists(local_path):
+        os.makedirs(local_path, exist_ok=True)
+        print("📦 Downloading model to cache...")
+        tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=local_path)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_id, cache_dir=local_path)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(local_path)
+        model = AutoModelForSeq2SeqLM.from_pretrained(local_path)
 
     pipe = pipeline("text2text-generation", model=model, tokenizer=tokenizer)
-    print("✅ Pipeline initialized")
+    print("✅ Local model pipeline ready")
 
     return tokenizer, pipe
+
 
 
 
