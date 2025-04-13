@@ -61,15 +61,20 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-@st.cache_resource
 def get_local_llm(model_id="google/flan-t5-small"):
     from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
-    print(f"📦 Loading model: {model_id}")
+    print(f"📦 Attempting to load model from: {model_id}")
+
     tokenizer = AutoTokenizer.from_pretrained(model_id)
+    print("✅ Tokenizer loaded")
+
     model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
+    print("✅ Model loaded")
+
     pipe = pipeline("text2text-generation", model=model, tokenizer=tokenizer)
-    print("✅ Model ready")
+    print("✅ Pipeline initialized")
+
     return tokenizer, pipe
 
 
@@ -102,21 +107,17 @@ def complete(prompt: str) -> str:
         return "[⚠️ Empty or too short prompt]"
 
     try:
-        result = llm_pipe(prompt, max_new_tokens=256)
-
+        result = llm_pipe(prompt[:512], max_new_tokens=256, do_sample=False)
 
         if not result or not isinstance(result, list):
             return "[❌ No result from model]"
         
-        output = result[0].get("generated_text", "").strip()
-        if "[/INST]" in output:
-            return output.split("[/INST]")[-1].strip()
+        output = result[0].get("generated_text") or result[0].get("generated_text", "").strip()
         return output or "[❌ Model returned empty response]"
 
-    except IndexError:
-        return "[❌ IndexError: Model output index out of range]"
     except Exception as e:
         return f"[❌ Exception in model: {str(e)}]"
+
 
 
 def save_session_state():
