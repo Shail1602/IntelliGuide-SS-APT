@@ -51,6 +51,10 @@ for folder in PDF_FOLDERS:
                 "trip_code": tour_meta.get("Trip Code", "Unknown"),
                 "region": tour_meta.get("Region", "Unknown"),
                 "country": tour_meta.get("Country", "Unknown"),
+                "highlights": ", ".join(tour_meta.get("Highlights", []))
+                  if isinstance(tour_meta.get("Highlights"), list) else "",
+                "trip_type": tour_meta.get("Trip Type", ""),
+
             }
 
             with pdfplumber.open(path) as pdf:

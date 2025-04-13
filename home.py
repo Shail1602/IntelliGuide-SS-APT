@@ -75,7 +75,7 @@ def get_openrouter_llm():
                     "model": st.session_state.get("model_name", "mistralai/mistral-7b-instruct"),
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0.5,
-                    "max_tokens": 512
+                    "max_tokens": 1024
                 }
             )
             result = response.json()
@@ -222,7 +222,12 @@ def build_prompt(question):
  #   return context 
 
 def query_faiss(query: str) -> str:
-    docs: list[Document] = faiss_db.similarity_search(query, k=st.session_state.num_retrieved_chunks)
+    filters = {}
+    selected_topic = st.session_state.get("selected_topic", "All Locations")
+    if selected_topic and selected_topic != "All Locations":
+        filters["region"] = selected_topic
+
+    docs: list[Document] = faiss_db.similarity_search(query, k=st.session_state.num_retrieved_chunks, filter=filters)
     context = ""
     for i, doc in enumerate(docs):
         file = doc.metadata.get("source", "unknown")
@@ -230,6 +235,7 @@ def query_faiss(query: str) -> str:
         country = doc.metadata.get("country", "N/A")
         context += f"Context {i+1} | File: {file} | Region: {region} | Country: {country}\n{doc.page_content}\n\n"
     return context
+
 
 def apply_theme():
     if st.session_state.get("dark_mode"):
@@ -644,16 +650,7 @@ def main():
     if question := st.chat_input("💬 Ask your question...", disabled=disable_chat):
         st.session_state.messages.append({"role": "user", "content": question})
         with st.spinner("SS IntelliGuide is typing..."):
-            question= question.replace("'", "")
-            if st.session_state.get("use_chat_history"):
-                history = get_chat_history()
-                full_question = summarize_chat(history, question)
-            else:
-                full_question = question
-
-            prompt = build_prompt(full_question)
-
-            # prompt = build_prompt(question.replace("'", ""))
+            prompt = build_prompt(question.replace("'", ""))
             reply = complete( prompt)
             st.session_state.messages.append({"role": "assistant", "content": reply})
             save_session_state()
