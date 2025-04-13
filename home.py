@@ -23,7 +23,11 @@ import requests
 
 APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
-MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
+MODELS = [
+    "openrouter/mistralai/mistral-7b-instruct",
+    "openrouter/meta-llama/llama-3-70b-instruct",
+    "openrouter/meta-llama/llama-3-8b-instruct"
+]
 
 #embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", cache_folder=".cache")
