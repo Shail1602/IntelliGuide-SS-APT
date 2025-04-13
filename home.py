@@ -207,6 +207,7 @@ You will read the tour content and answer the user's question in a **friendly, r
 
 Your tone should be warm, professional, and helpful. Never invent details not in the context.
 Respond as a travel storyteller. Avoid raw lists or JSON unless explicitly requested.
+Use all relevant details, including booking links, if available.
 """
 
 
@@ -248,20 +249,22 @@ def query_faiss(query: str) -> str:
     for i, doc in enumerate(docs):
         meta = doc.metadata
         context += f"""Context {i+1}
-                    File: {meta.get("source", "unknown")}
-                    Trip Code: {meta.get("trip_code", "N/A")}
-                    Trip Name: {meta.get("trip_name", "N/A")}
-                    Region: {meta.get("region", "N/A")}
-                    Country: {meta.get("country", "N/A")}
-                    Start Date: {meta.get("start_date", "N/A")}
-                    End Date: {meta.get("end_date", "N/A")}
-                    Price: {meta.get("price", "N/A")}
-                    Booking URL: {meta.get("booking_url", "N/A")}
+            Trip Name: {meta.get('trip_name', 'N/A')}
+            Trip Code: {meta.get('trip_code', 'N/A')}
+            Region: {meta.get('region', 'N/A')}
+            Country: {meta.get('country', 'N/A')}
+            Start Date: {meta.get('start_date', 'N/A')}
+            End Date: {meta.get('end_date', 'N/A')}
+            Duration: {meta.get('duration', 'N/A')}
+            Price: {meta.get('price', 'N/A')}
+            Booking Link: {meta.get('booking_url', 'N/A')}
+            Highlights: {meta.get('highlights', '')}
 
-                    {doc.page_content}
+{doc.page_content}
 
-                    """
+"""
     return context
+
 
 
 
