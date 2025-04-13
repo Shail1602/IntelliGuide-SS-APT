@@ -18,7 +18,7 @@ langchain==0.1.16
 langsmith==0.1.18
 langchain-core==0.1.45
 langchain-community==0.0.36
-langchain-text-splitters==0.2.0
+langchain-text-splitters==0.0.10
 safetensors
 accelerate
 bitsandbytes
