@@ -24,3 +24,4 @@ accelerate
 bitsandbytes
 pydantic==1.10.13
 sentencepiece>=0.1.99
+openai

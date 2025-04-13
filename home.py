@@ -19,14 +19,13 @@ import torch
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from transformers import MistralForCausalLM
 import pydantic
-
-print("🧠 App using pydantic version:", pydantic.__version__)
+import openai
 
 
 APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
-
+openai.api_key = st.secrets["openai"]["api_key"]
 
 #embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", cache_folder=".cache")
@@ -61,32 +60,22 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-def get_local_llm(model_id="microsoft/phi-1_5", local_path="local_models/phi"):
-    from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
-    import os
+def get_openai_llm():
+    def chat_completion(prompt):
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=512,
+                temperature=0.5
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            return f"[❌ OpenAI Error: {str(e)}]"
+    return chat_completion
 
-    if not os.path.exists(local_path):
-        os.makedirs(local_path, exist_ok=True)
-        print("📦 Downloading model to cache...")
-        tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=local_path)
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_id, cache_dir=local_path)
-    else:
-        tokenizer = AutoTokenizer.from_pretrained(local_path)
-        model = AutoModelForSeq2SeqLM.from_pretrained(local_path)
+llm_pipe = get_openai_llm()
 
-    pipe = pipeline("text2text-generation", model=model, tokenizer=tokenizer)
-    print("✅ Local model pipeline ready")
-
-    return tokenizer, pipe
-
-
-
-
-try:
-    tokenizer, llm_pipe = get_local_llm()
-except Exception as e:
-    st.error(f"❌ Failed to load local LLM: {str(e)}")
-    raise
 
 def auto_summarize(prompt, max_words=1024):
     words = prompt.split()
