@@ -24,9 +24,9 @@ import requests
 APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
 MODELS = [
-    "openrouter/mistralai/mistral-7b-instruct",
-    "openrouter/meta-llama/llama-3-70b-instruct",
-    "openrouter/meta-llama/llama-3-8b-instruct"
+    "mistralai/mistral-7b-instruct",
+    "meta-llama/llama-3-70b-instruct",
+    "meta-llama/llama-3-8b-instruct"
 ]
 
 #embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -72,7 +72,7 @@ def get_openrouter_llm():
                     "Content-Type": "application/json"
                 },
                 json={
-                    "model": st.session_state.get("model_name", "openrouter/mistralai/mistral-7b-instruct"),
+                    "model": st.session_state.get("model_name", "mistralai/mistral-7b-instruct"),
                     "messages": [{"role": "user", "content": prompt}],
                     "temperature": 0.5,
                     "max_tokens": 512
@@ -260,7 +260,7 @@ def init_config():
         # st.radio("🔍 Use Search From", ["FAISS"], key="search_backend", horizontal=True)
         st.session_state.search_backend = "Cortex"
         if "model_name" not in st.session_state:
-            st.session_state.model_name = "openrouter/mistralai/mistral-7b-instruct"
+            st.session_state.model_name = "mistralai/mistral-7b-instruct"
         #if "selected_cortex_search_service" not in st.session_state:
          #   service_names = [s["name"] for s in st.session_state.service_metadata]
           #  if service_names:
