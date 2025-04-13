@@ -19,13 +19,14 @@ import torch
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from transformers import MistralForCausalLM
 import pydantic
-import openai
-
+from openai import OpenAI
 
 APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
 st.set_page_config(APP_NAME, page_icon="🌏", layout="wide")
 MODELS = ["mistral-large2", "llama3.1-70b", "llama3.1-8b"]
-openai.api_key = st.secrets["openai"]["api_key"]
+
+client = OpenAI(api_key=st.secrets["openai_api_key"])
+
 
 #embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", cache_folder=".cache")
@@ -63,12 +64,13 @@ def extract_location_keywords(query):
 def get_openai_llm():
     def chat_completion(prompt):
         try:
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=512,
-                temperature=0.5
-            )
+            response = client.chat.completions.create(
+                        model="gpt-3.5-turbo",
+                        messages=[{"role": "user", "content": prompt}],
+                        max_tokens=512,
+                        temperature=0.5
+                    )
+
             return response.choices[0].message.content.strip()
         except Exception as e:
             return f"[❌ OpenAI Error: {str(e)}]"
@@ -97,11 +99,7 @@ def auto_summarize(prompt, max_words=1024):
 def complete(prompt: str) -> str:
     if not prompt or len(prompt.strip()) < 5:
         return "[⚠️ Empty or too short prompt]"
-    
-    try:
-        return llm_pipe(prompt)
-    except Exception as e:
-        return f"[❌ Exception in model: {str(e)}]"
+    return llm_pipe(prompt)
 
 
 
