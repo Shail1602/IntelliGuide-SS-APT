@@ -61,7 +61,7 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-def get_local_llm(model_id="EleutherAI/gpt-neo-125M"):
+def get_local_llm(model_id="microsoft/phi-2"):
     try:
         print(f"📦 Attempting to load model from: {model_id}")
         
