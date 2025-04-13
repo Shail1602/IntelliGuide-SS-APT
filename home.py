@@ -48,7 +48,7 @@ connection_parameters = {
 }
 
 session = Session.builder.configs(connection_parameters).create()
-root = Root(session)
+# root = Root(session)
 
 TOPICS = ["All Locations", "Europe", "Australia", "New-Zealand", "Asia", "Africa", "South-America", "Antartica", "North-America"]
 SESSION_STATE_FILE = "session_state.json"
