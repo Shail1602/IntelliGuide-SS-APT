@@ -191,8 +191,7 @@ def build_prompt(question):
 
     return f"""
 You are SS IntelliGuide – a smart, conversational travel assistant.
-
-You will read the tour content and answer the user's question in a **friendly, readable and natural format**. Do not return lists or raw JSON unless explicitly asked. Summarize and rewrite the details into full sentences.
+You will read the tour content and answer the user's question in a **friendly, readable and natural format**. If a booking URL is available, include it as a clickable link.
 
 <tags>
 {tag_line}
@@ -207,11 +206,8 @@ You will read the tour content and answer the user's question in a **friendly, r
 </question>
 
 Your tone should be warm, professional, and helpful. Never invent details not in the context.
-Respond as a travel storyteller. Do not use bullet points or JSON formatting. Present everything in continuous prose.
+Respond as a travel storyteller. Avoid raw lists or JSON unless explicitly requested.
 """
-
-
-
 
 
 # def query_cortex(query, columns=None, filter={}):
@@ -250,11 +246,23 @@ def query_faiss(query: str) -> str:
     docs: list[Document] = faiss_db.similarity_search(query, k=st.session_state.num_retrieved_chunks, filter=filters)
     context = ""
     for i, doc in enumerate(docs):
-        file = doc.metadata.get("source", "unknown")
-        region = doc.metadata.get("region", "N/A")
-        country = doc.metadata.get("country", "N/A")
-        context += f"Context {i+1} | File: {file} | Region: {region} | Country: {country}\n{doc.page_content}\n\n"
+        meta = doc.metadata
+        context += f"""Context {i+1}
+                    File: {meta.get("source", "unknown")}
+                    Trip Code: {meta.get("trip_code", "N/A")}
+                    Trip Name: {meta.get("trip_name", "N/A")}
+                    Region: {meta.get("region", "N/A")}
+                    Country: {meta.get("country", "N/A")}
+                    Start Date: {meta.get("start_date", "N/A")}
+                    End Date: {meta.get("end_date", "N/A")}
+                    Price: {meta.get("price", "N/A")}
+                    Booking URL: {meta.get("booking_url", "N/A")}
+
+                    {doc.page_content}
+
+                    """
     return context
+
 
 
 def apply_theme():
