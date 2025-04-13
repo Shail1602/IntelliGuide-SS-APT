@@ -61,7 +61,7 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-def get_local_llm(model_id="local_models/phi/models--microsoft--phi-1_5"):
+def get_local_llm(model_id="local_models/mistral7b"):
     from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
     print(f"📦 Attempting to load model from: {model_id}")
