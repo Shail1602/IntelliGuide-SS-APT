@@ -4,6 +4,9 @@ import pdfplumber
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+import pydantic
+
+print("✅ Vector DB using pydantic version:", pydantic.__version__)
 
 # 📁 Paths
 PDF_FOLDERS = ["pdfs", "Fleet_pdfs"]

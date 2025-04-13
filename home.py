@@ -18,6 +18,9 @@ from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 import torch
 from langchain_huggingface import HuggingFaceEmbeddings
 from transformers import MistralForCausalLM
+import pydantic
+
+print("🧠 App using pydantic version:", pydantic.__version__)
 
 
 APP_NAME = "SS Intelliguide – AI-Powered Travel Intelligence"
