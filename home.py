@@ -61,7 +61,7 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-def get_local_llm(model_id="local_models/mistral7b"):
+def get_local_llm(model_id="sshleifer/tiny-gpt2"):
     try:
         print(f"📦 Attempting to load model from: {model_id}")
         
