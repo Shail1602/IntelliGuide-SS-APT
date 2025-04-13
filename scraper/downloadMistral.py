@@ -1,8 +1,8 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-model_id = "sshleifer/tiny-gpt2"
-model = AutoModelForCausalLM.from_pretrained(model_id)
-tokenizer = AutoTokenizer.from_pretrained(model_id)
+model_id = "microsoft/phi-1_5"  # Or replace with your preferred model
 
-model.save_pretrained("local_models/mistral7b")
-tokenizer.save_pretrained("local_models/mistral7b")
+tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir="local_models/phi")
+model = AutoModelForCausalLM.from_pretrained(model_id, cache_dir="local_models/phi")
+
+print("✅ Model and tokenizer downloaded and saved to local_models/phi")
