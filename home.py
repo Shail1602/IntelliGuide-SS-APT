@@ -61,33 +61,16 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
+@st.cache_resource
 def get_local_llm(model_id="google/flan-t5-small"):
-    try:
-        print(f"📦 Attempting to load model from: {model_id}")
-        
-        tokenizer = AutoTokenizer.from_pretrained(
-            model_id,
-            trust_remote_code=False,
-            use_fast=False
-        )
-        print("✅ Tokenizer loaded")
+    from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
-        model = AutoModelForCausalLM.from_pretrained(
-            model_id,
-            trust_remote_code=False,
-            torch_dtype=torch.float32,
-            device_map="cpu"  # This uses accelerate to pin to CPU
-        )
-        print("✅ Model loaded")
-
-        # ❗ REMOVE `device=-1` to avoid crash
-        pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
-        print("✅ Pipeline initialized")
-        return tokenizer, pipe
-
-    except Exception as e:
-        print("❌ Exception during LLM loading:", str(e))
-        raise
+    print(f"📦 Loading model: {model_id}")
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
+    pipe = pipeline("text2text-generation", model=model, tokenizer=tokenizer)
+    print("✅ Model ready")
+    return tokenizer, pipe
 
 
 
@@ -119,7 +102,8 @@ def complete(prompt: str) -> str:
         return "[⚠️ Empty or too short prompt]"
 
     try:
-        result = llm_pipe(prompt[:1000], max_new_tokens=256, do_sample=True, temperature=0.7)
+        result = llm_pipe(prompt, max_new_tokens=256)
+
 
         if not result or not isinstance(result, list):
             return "[❌ No result from model]"
