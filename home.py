@@ -61,7 +61,7 @@ def extract_location_keywords(query):
 
 
 @st.cache_resource
-def get_local_llm(model_id="heBloke/TinyMistral-248M-Chat-v1.0-GGUF"):
+def get_local_llm(model_id="tiiuae/falcon-rw-1b"):
     try:
         print(f"📦 Attempting to load model from: {model_id}")
         
