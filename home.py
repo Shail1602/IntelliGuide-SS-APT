@@ -62,21 +62,31 @@ def extract_location_keywords(query):
 
 @st.cache_resource
 def get_local_llm(model_id="local_models/mistral7b"):
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_id,
-        trust_remote_code=True,
-        use_fast=False  
-    )
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        trust_remote_code=True,
-        torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-        device_map="auto"
-    )
-    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0 if torch.cuda.is_available() else -1)
-    return tokenizer, pipe
+    try:
+        print(f"📦 Attempting to load model from: {model_id}")
+        
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_id,
+            trust_remote_code=False,  # safer default
+            use_fast=False
+        )
+        print("✅ Tokenizer loaded")
 
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            trust_remote_code=False,
+            torch_dtype=torch.float32,  # safer than float16 for CPU
+            device_map="cpu"  # force CPU for now to avoid GPU crash
+        )
+        print("✅ Model loaded")
 
+        pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, device=-1)
+        print("✅ Pipeline initialized")
+        return tokenizer, pipe
+
+    except Exception as e:
+        print("❌ Exception during LLM loading:", str(e))
+        raise
 
 
 try:
