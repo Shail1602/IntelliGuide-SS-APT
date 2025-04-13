@@ -97,18 +97,12 @@ def auto_summarize(prompt, max_words=1024):
 def complete(prompt: str) -> str:
     if not prompt or len(prompt.strip()) < 5:
         return "[⚠️ Empty or too short prompt]"
-
+    
     try:
-        result = llm_pipe(prompt[:512], max_new_tokens=256, do_sample=False)
-
-        if not result or not isinstance(result, list):
-            return "[❌ No result from model]"
-        
-        output = result[0].get("generated_text") or result[0].get("generated_text", "").strip()
-        return output or "[❌ Model returned empty response]"
-
+        return llm_pipe(prompt)
     except Exception as e:
         return f"[❌ Exception in model: {str(e)}]"
+
 
 
 
