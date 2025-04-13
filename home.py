@@ -685,7 +685,9 @@ def main():
             reply = complete( prompt)
             st.session_state.messages.append({"role": "assistant", "content": reply})
             save_session_state()
-            st.markdown(f"<div class='chat-left'>{reply}</div>", unsafe_allow_html=True)
+            # st.markdown(f"<div class='chat-left'>{reply}</div>", unsafe_allow_html=True)
+            st.markdown(reply, unsafe_allow_html=False)
+
 
     if st.session_state.messages:
         with st.expander("📌 Pinned Messages"):
