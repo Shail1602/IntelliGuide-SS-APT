@@ -79,7 +79,11 @@ def get_local_llm(model_id="local_models/mistral7b"):
 
 
 
-tokenizer, llm_pipe = get_local_llm()
+try:
+    tokenizer, llm_pipe = get_local_llm()
+except Exception as e:
+    st.error(f"❌ Failed to load local LLM: {str(e)}")
+    raise
 
 def auto_summarize(prompt, max_words=1024):
     words = prompt.split()
