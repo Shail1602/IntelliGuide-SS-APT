@@ -14,11 +14,13 @@ sentence-transformers>=2.6.0
 torch==2.2.1
 transformers==4.40.0
 numpy
-langchain==0.1.17
-langchain-community==0.0.36
+langchain==0.0.290
+langchain-core==0.1.21
+langchain-community==0.0.19
+langsmith==0.0.87
 langchain-huggingface==0.0.3
-langchain-text-splitters
+langchain-text-splitters==0.0.2
 safetensors
 accelerate
 bitsandbytes
-pydantic==2.11.2
+pydantic==1.10.13
