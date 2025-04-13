@@ -260,7 +260,7 @@ def init_config():
         # st.radio("🔍 Use Search From", ["FAISS"], key="search_backend", horizontal=True)
         st.session_state.search_backend = "Cortex"
         if "model_name" not in st.session_state:
-            st.session_state.model_name = "mistral-large2"
+            st.session_state.model_name = "openrouter/mistralai/mistral-7b-instruct"
         #if "selected_cortex_search_service" not in st.session_state:
          #   service_names = [s["name"] for s in st.session_state.service_metadata]
           #  if service_names:
