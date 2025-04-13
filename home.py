@@ -16,7 +16,7 @@ import pdfplumber
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 import torch
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
 from transformers import MistralForCausalLM
 import pydantic
 
