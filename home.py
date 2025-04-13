@@ -181,14 +181,18 @@ def summarize_chat(chat_history, question):
 
 def build_prompt(question):
     context = query_faiss(question)
-    tags = []
+
+    tag_summary = []
     for line in context.splitlines():
-        if "Trip Code:" in line or "Region:" in line:
-            tags.append(line.strip())
-    tag_line = " | ".join(set(tags))
-    
+        if "Trip Code:" in line or "Trip Name:" in line or "Region:" in line:
+            tag_summary.append(line.strip())
+
+    tag_line = " | ".join(set(tag_summary))
+
     return f"""
-You are SS IntelliGuide – your responses must strictly use the below tour information.
+You are SS IntelliGuide – a smart, conversational travel assistant.
+
+You will read the tour content and answer the user's question in a **friendly, readable and natural format**. Do not return lists or raw JSON unless explicitly asked. Summarize and rewrite the details into full sentences.
 
 <tags>
 {tag_line}
@@ -202,8 +206,10 @@ You are SS IntelliGuide – your responses must strictly use the below tour info
 {question}
 </question>
 
-Answer only from the context. Do not assume.
+Your tone should be warm, professional, and helpful. Never invent details not in the context.
+Respond as a travel storyteller. Do not use bullet points or JSON formatting. Present everything in continuous prose.
 """
+
 
 
 
