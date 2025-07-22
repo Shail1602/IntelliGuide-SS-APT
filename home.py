@@ -48,7 +48,7 @@ connection_parameters = {
     "role": st.secrets["snowflake"].get("role", "ACCOUNTADMIN")
 }
 
-session = Session.builder.configs(connection_parameters).create()
+//session = Session.builder.configs(connection_parameters).create()
 # root = Root(session)
 
 TOPICS = ["All Locations", "Europe", "Australia", "New-Zealand", "Asia", "Africa", "South-America", "Antartica", "North-America"]
