@@ -38,15 +38,15 @@ faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deser
 # faiss_db = FAISS.load_local("embeddings", embedding_model, allow_dangerous_deserialization=True)
 
 # Snowflake session config
-connection_parameters = {
-    "user": st.secrets["snowflake"]["user"],
-    "password": st.secrets["snowflake"]["password"],
-    "account": st.secrets["snowflake"]["account"],
-    "warehouse": st.secrets["snowflake"]["warehouse"],
-    "database": st.secrets["snowflake"]["database"],
-    "schema": st.secrets["snowflake"]["schema"],
-    "role": st.secrets["snowflake"].get("role", "ACCOUNTADMIN")
-}
+# connection_parameters = {
+#     "user": st.secrets["snowflake"]["user"],
+#     "password": st.secrets["snowflake"]["password"],
+#     "account": st.secrets["snowflake"]["account"],
+#     "warehouse": st.secrets["snowflake"]["warehouse"],
+#     "database": st.secrets["snowflake"]["database"],
+#     "schema": st.secrets["snowflake"]["schema"],
+#     "role": st.secrets["snowflake"].get("role", "ACCOUNTADMIN")
+# }
 
 # session = Session.builder.configs(connection_parameters).create()
 # root = Root(session)
